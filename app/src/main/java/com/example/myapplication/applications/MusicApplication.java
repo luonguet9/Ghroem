@@ -5,8 +5,14 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
 
+import com.example.myapplication.models.Song;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class MusicApplication extends Application {
     public static final String CHANNEL_ID = "CHANNEL_MUSIC";
+    public static List<Song> mData = new ArrayList<>();
 
     @Override
     public void onCreate() {

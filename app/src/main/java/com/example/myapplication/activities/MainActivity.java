@@ -26,8 +26,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
-    MyService mService;
-    boolean isServiceConnected;
+    public MyService mService;
+    public boolean isServiceConnected;
     BroadcastReceiver mBroadcastReceiver;
 
     ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
             isServiceConnected = true;
 
             handleBottomMediaPlayer();
+
 
             mBroadcastReceiver = new BroadcastReceiver() {
                 @Override
@@ -74,11 +75,10 @@ public class MainActivity extends AppCompatActivity {
 
         initView();
 
-        layoutBottomMediaPlayer.setOnClickListener(view -> {
-            startActivity(new Intent(MainActivity.this, MediaPlayerActivity.class));
-        });
 
-        onClickStartService();
+        layoutBottomMediaPlayer.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, MediaPlayerActivity.class)));
+
+        //onClickStartService();
 
     }
 
@@ -135,12 +135,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleBottomMediaPlayer() {
         layoutBottomMediaPlayer.setVisibility(View.VISIBLE);
-        txtNameSong.setText(mService.mSong.getName());
-        txtSingerSong.setText(mService.mSong.getSinger());
+        imgSong.setImageResource(MyService.mSong.getImageResource());
+        txtNameSong.setText(MyService.mSong.getName());
+        txtSingerSong.setText(MyService.mSong.getSinger());
         setStatusPlayOrPause();
 
         imgPlayOrPause.setOnClickListener(view -> {
-            if (mService.isPlaying) {
+            if (MyService.isPlaying) {
                 mService.pauseMusic();
                 sendActionToService(MyService.ACTION_PAUSE);
             } else {
@@ -152,11 +153,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
         imgPrevious.setOnClickListener(view -> {
-            //TODO
+            sendActionToService(MyService.ACTION_PREVIOUS);
+            handleBottomMediaPlayer();
         });
 
         imgNext.setOnClickListener(view -> {
-            //TODO
+            sendActionToService(MyService.ACTION_NEXT);
+            handleBottomMediaPlayer();
         });
 
     }
@@ -176,14 +179,21 @@ public class MainActivity extends AppCompatActivity {
             case MyService.ACTION_RESUME:
                 setStatusPlayOrPause();
                 break;
+
+            case MyService.ACTION_PREVIOUS:
+                handleBottomMediaPlayer();
+                break;
+
+            case MyService.ACTION_NEXT:
+                handleBottomMediaPlayer();
+                break;
         }
     }
 
-    private void onClickStartService() {
+    public void onClickStartService(Song song) {
         Intent intent = new Intent(this, MyService.class);
 
         Bundle bundle = new Bundle();
-        Song song = new Song("Love Me Like You Do", "Ellie Goulding",R.drawable.love, R.raw.music);
         bundle.putSerializable("object_song", song);
         intent.putExtras(bundle);
 
@@ -192,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
         bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
-    private void onClickStopService() {
+    public void onClickStopService() {
         if (isServiceConnected) {
             unbindService(mServiceConnection);
             isServiceConnected = false;
@@ -200,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
 
         stopService(new Intent(this, MyService.class));
 
-        layoutBottomMediaPlayer.setVisibility(View.GONE);
+        //layoutBottomMediaPlayer.setVisibility(View.GONE);
     }
 
     private void setStatusPlayOrPause() {
@@ -208,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        if (mService.isPlaying) {
+        if (MyService.isPlaying) {
             imgPlayOrPause.setImageResource(R.drawable.ic_baseline_pause_24);
         } else {
             imgPlayOrPause.setImageResource(R.drawable.ic_baseline_play_arrow_24);

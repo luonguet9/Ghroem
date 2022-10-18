@@ -5,7 +5,7 @@
     android:id="@+id/layout_media_player"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_solid_blue"
+    android:background="@drawable/bg_solid_gray"
     android:orientation="vertical"
     tools:context=".activities.MediaPlayerActivity">
 
@@ -26,19 +26,20 @@
         android:id="@+id/image_song"
         android:layout_width="280dp"
         android:layout_height="280dp"
+        android:layout_above="@id/song_info"
         android:layout_below="@id/tool_bar"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
+        android:layout_centerVertical="true"
+        android:layout_centerInParent="true"
         android:scaleType="centerCrop"
-        android:src="@drawable/love" />
+        android:src="@drawable/spotify_blue" />
 
 
     <RelativeLayout
         android:id="@+id/song_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/image_song"
-        android:layout_marginTop="50dp"
+        android:layout_above="@id/seek_bar"
         android:layout_marginBottom="10dp"
         android:orientation="horizontal">
 
@@ -86,9 +87,12 @@
         android:id="@+id/seek_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/song_info"
-        android:layout_margin="10dp"
-        android:progressTint="@color/white"
+        android:layout_above="@id/time_info"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:progressTint="@color/spotify_blue"
         android:thumb="@drawable/switch_thumb" />
 
 
@@ -96,9 +100,8 @@
         android:id="@+id/time_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/seek_bar"
+        android:layout_above="@id/layout_control"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp">
 
@@ -123,10 +126,11 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/layout_control"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/time_info"
-        android:layout_marginTop="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="50dp"
         android:orientation="horizontal"
         android:padding="10dp">
 

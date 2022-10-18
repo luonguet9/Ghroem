@@ -21,8 +21,8 @@
         android:layout_marginStart="5dp"
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="1dp"
-        android:background="@drawable/bg_corner_gray"
-        android:visibility="visible">
+        android:background="@drawable/bg_corner_blue"
+        android:visibility="gone">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/card_view_image_song"
@@ -38,7 +38,7 @@
                 android:layout_height="40dp"
                 android:layout_centerVertical="true"
                 android:scaleType="centerCrop"
-                android:src="@drawable/love" />
+                android:src="@drawable/spotify_blue" />
         </androidx.cardview.widget.CardView>
 
 
@@ -58,16 +58,14 @@
                 android:layout_height="wrap_content"
                 android:text="Name"
                 android:textColor="@color/black"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/text_singer_song"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Single"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textSize="14sp" />
 
         </LinearLayout>
 

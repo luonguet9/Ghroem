@@ -49,7 +49,8 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.MyViewHolder> 
             return;
         }
 
-        //holder.imgSong.setImageResource(song.getImageResource());
+        holder.imgSong.setImageResource(song.getImageResource());
+
         holder.txtNameSong.setText(song.getName());
         holder.txtSingleSong.setText(song.getSinger());
 

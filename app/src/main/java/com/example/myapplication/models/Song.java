@@ -1,18 +1,34 @@
 package com.example.myapplication.models;
 
+
 import java.io.Serializable;
 
 public class Song implements Serializable {
+    private int id;
     private String name;
-    private String singer;
+    private String album;
     private int imageResource;
-    private int resource;
+    private String singer;
+    private String url;
+    private String addedDate;
 
-    public Song(String name, String singer, int imageResource, int resource) {
+
+    public Song(int id, String name, String album, int imageResource, String singer, String url, String addedDate) {
+        this.id = id;
         this.name = name;
-        this.singer = singer;
+        this.album = album;
         this.imageResource = imageResource;
-        this.resource = resource;
+        this.singer = singer;
+        this.url = url;
+        this.addedDate = addedDate;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -23,12 +39,12 @@ public class Song implements Serializable {
         this.name = name;
     }
 
-    public String getSinger() {
-        return singer;
+    public String getAlbum() {
+        return album;
     }
 
-    public void setSinger(String singer) {
-        this.singer = singer;
+    public void setAlbum(String album) {
+        this.album = album;
     }
 
     public int getImageResource() {
@@ -39,11 +55,27 @@ public class Song implements Serializable {
         this.imageResource = imageResource;
     }
 
-    public int getResource() {
-        return resource;
+    public String getSinger() {
+        return singer;
     }
 
-    public void setResource(int resource) {
-        this.resource = resource;
+    public void setSinger(String singer) {
+        this.singer = singer;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getAddedDate() {
+        return addedDate;
+    }
+
+    public void setAddedDate(String addedDate) {
+        this.addedDate = addedDate;
     }
 }

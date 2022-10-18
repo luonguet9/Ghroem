@@ -11,8 +11,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
-import android.view.MotionEvent;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -22,6 +22,8 @@ import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.services.MyService;
+
+import java.text.SimpleDateFormat;
 
 public class MediaPlayerActivity extends AppCompatActivity {
 
@@ -38,6 +40,8 @@ public class MediaPlayerActivity extends AppCompatActivity {
     MyService mService;
     boolean isServiceConnected;
     BroadcastReceiver mBroadcastReceiver;
+
+    public static boolean isShuffle, isRepeat;
 
     ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -94,9 +98,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
             }
         });
 
-        imgFavorite.setOnClickListener(view -> {
-            handleOnClickFavorite();
-        });
+
 
 //        layoutMediaPlayer.setOnTouchListener((view, motionEvent) -> {
 //            float x = motionEvent.getX();
@@ -145,6 +147,8 @@ public class MediaPlayerActivity extends AppCompatActivity {
         txtSingerSong.setText(mService.mSong.getSinger());
 
         setStatusPlayOrPause();
+        setTimeTotal();
+        updateTime();
 
         imgPlayOrPause.setOnClickListener(view -> {
             if (mService.isPlaying) {
@@ -160,13 +164,38 @@ public class MediaPlayerActivity extends AppCompatActivity {
         });
 
         imgPrevious.setOnClickListener(view -> {
-            //TODO
+            sendActionToService(MyService.ACTION_PREVIOUS);
+            handleMediaPlayer();
         });
 
         imgNext.setOnClickListener(view -> {
-            //TODO
+            sendActionToService(MyService.ACTION_NEXT);
+            handleMediaPlayer();
         });
 
+        imgShuffle.setOnClickListener(view -> {
+            if (isShuffle) {
+                isShuffle = false;
+            } else {
+                isShuffle = true;
+            }
+
+            handleStatusShuffle();
+        });
+
+        imgRepeat.setOnClickListener(view -> {
+            if (isRepeat) {
+                isRepeat = false;
+            } else {
+                isRepeat = true;
+            }
+
+            handleStatusRepeat();
+        });
+
+        imgFavorite.setOnClickListener(view -> {
+            handleOnClickFavorite();
+        });
 
     }
 
@@ -184,6 +213,14 @@ public class MediaPlayerActivity extends AppCompatActivity {
             case MyService.ACTION_RESUME:
                 setStatusPlayOrPause();
                 break;
+
+            case MyService.ACTION_PREVIOUS:
+                handleMediaPlayer();
+                break;
+
+            case MyService.ACTION_NEXT:
+                handleMediaPlayer();
+                break;
         }
     }
 
@@ -200,6 +237,26 @@ public class MediaPlayerActivity extends AppCompatActivity {
             imgPlayOrPause.setImageResource(R.drawable.ic_baseline_play_circle_24);
             stopAnimationImageSong();
         }
+    }
+
+    private void handleStatusShuffle() {
+        if (isShuffle) {
+            imgShuffle.setImageResource(R.drawable.ic_baseline_shuffle_on_24);
+        } else {
+            imgShuffle.setImageResource(R.drawable.ic_baseline_shuffle_off_24);
+        }
+    }
+
+    private void handleStatusRepeat() {
+        if (isRepeat) {
+            imgRepeat.setImageResource(R.drawable.ic_baseline_repeat_one_24);
+        } else {
+            imgRepeat.setImageResource(R.drawable.ic_baseline_repeat_off_24);
+        }
+    }
+
+    private void handleOnClickFavorite() {
+        Toast.makeText(this, "Chưa xử lý", Toast.LENGTH_SHORT).show();
     }
 
     private void sendActionToService(int action) {
@@ -226,7 +283,37 @@ public class MediaPlayerActivity extends AppCompatActivity {
         imgSong.animate().cancel();
     }
 
-    private void handleOnClickFavorite() {
+
+
+    private void setTimeTotal() {
+        SimpleDateFormat time = new SimpleDateFormat("mm:ss");
+        txtTotalTime.setText(time.format(mService.mMediaPlayer.getDuration()));
+        seekBar.setMax(mService.mMediaPlayer.getDuration());
+    }
+
+    private void updateTime() {
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (mService.mMediaPlayer != null && isServiceConnected) {
+                    mService.mMediaPlayer.setOnCompletionListener(mediaPlayer -> next());
+                    SimpleDateFormat time = new SimpleDateFormat("mm:ss");
+                    txtRunTime.setText(time.format(mService.mMediaPlayer.getCurrentPosition()));
+                    seekBar.setProgress(mService.mMediaPlayer.getCurrentPosition());
+                }
+                handler.postDelayed(this, 200);
+            }
+        }, 200);
 
     }
+
+    private void next() {
+        mService.nextSong();
+        if (mService.mMediaPlayer != null) {
+            setTimeTotal();
+            handleMediaPlayer();
+        }
+    }
+
 }

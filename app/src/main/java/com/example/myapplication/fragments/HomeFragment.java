@@ -1,5 +1,6 @@
 package com.example.myapplication.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -12,13 +13,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import com.example.myapplication.R;
+import com.example.myapplication.activities.MainActivity;
 import com.example.myapplication.adapters.SongAdapter;
+import com.example.myapplication.applications.MusicApplication;
 import com.example.myapplication.models.Song;
+import com.example.myapplication.services.MyService;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -39,6 +46,7 @@ public class HomeFragment extends Fragment {
     RecyclerView mRecyclerView;
     SongAdapter mSongAdapter;
     List<Song> mListSong;
+    MyService mService;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -82,11 +90,11 @@ public class HomeFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
 
-        mListSong = getListSong();
+        mListSong = MusicApplication.mData;
         mSongAdapter = new SongAdapter(mListSong, new SongAdapter.IOnItemClickListener() {
             @Override
             public void onItemClickListener(Song song) {
-
+                startMusic(song);
             }
 
             @Override
@@ -120,11 +128,13 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-    private List<Song> getListSong() {
-        List<Song> list = new ArrayList<>();
-        for (int i = 1; i <= 10; i++) {
-            list.add(new Song("Song " + i, "Sing " + i, R.drawable.love, R.raw.music));
+    private void startMusic(Song song) {
+        if (((MainActivity) requireActivity()).isServiceConnected) {
+            ((MainActivity) requireActivity()).onClickStopService();
+            ((MainActivity) requireActivity()).onClickStartService(song);
+        } else {
+            ((MainActivity) requireActivity()).onClickStartService(song);
         }
-        return list;
     }
+
 }

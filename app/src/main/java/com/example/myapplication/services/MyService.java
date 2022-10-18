@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -23,14 +24,15 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.myapplication.R;
 import com.example.myapplication.activities.MainActivity;
+import com.example.myapplication.applications.MusicApplication;
 import com.example.myapplication.receivers.ActionReceiver;
 import com.example.myapplication.models.Song;
 
 public class MyService extends Service {
 
     public MediaPlayer mMediaPlayer;
-    public boolean isPlaying;
-    public Song mSong;
+    public static boolean isPlaying;
+    public static Song mSong;
 
     public static final int ACTION_START = 0;
     public static final int ACTION_PAUSE = 1;
@@ -98,15 +100,23 @@ public class MyService extends Service {
     }
 
     private void sendMediaPlayerNotification(Song song) {
-        Intent intent = new Intent(this, MainActivity.class);
-        //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//        Intent resultIntent = new Intent(this, MainActivity.class);
+//        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+//        stackBuilder.addNextIntentWithParentStack(resultIntent);
+//
+//        PendingIntent pendingIntent =
+//                stackBuilder.getPendingIntent(0,
+//                        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addNextIntentWithParentStack(intent);
-
-        //PendingIntent pendingIntent = PendingIntent.getActivity(this, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
-        PendingIntent pendingIntent = stackBuilder.getPendingIntent(1, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        Intent notifyIntent = new Intent(this, MainActivity.class);
+// Set the Activity to start in a new, empty task
+        notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+// Create the PendingIntent
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                this, 0, notifyIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), song.getImageResource());
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
@@ -118,13 +128,13 @@ public class MyService extends Service {
                 .setStyle(new androidx.media.app.NotificationCompat.MediaStyle().setShowActionsInCompactView(0, 1, 2));
 
         if (isPlaying) {
-            builder.addAction(R.drawable.ic_baseline_skip_previous_black_24, "Previous", null)
+            builder.addAction(R.drawable.ic_baseline_skip_previous_black_24, "Previous", getPendingIntent(this, ACTION_PREVIOUS))
                     .addAction(R.drawable.ic_baseline_pause_24, "Pause", getPendingIntent(this, ACTION_PAUSE))
-                    .addAction(R.drawable.ic_baseline_skip_next_black_24, "Next", null);
+                    .addAction(R.drawable.ic_baseline_skip_next_black_24, "Next", getPendingIntent(this, ACTION_NEXT));
         } else {
-            builder.addAction(R.drawable.ic_baseline_skip_previous_black_24, "Previous", null)
+            builder.addAction(R.drawable.ic_baseline_skip_previous_black_24, "Previous", getPendingIntent(this, ACTION_PREVIOUS))
                     .addAction(R.drawable.ic_baseline_play_arrow_24, "Resume", getPendingIntent(this, ACTION_RESUME))
-                    .addAction(R.drawable.ic_baseline_skip_next_black_24, "Next", null);
+                    .addAction(R.drawable.ic_baseline_skip_next_black_24, "Next", getPendingIntent(this, ACTION_NEXT));
         }
 
         Notification notification = builder.build();
@@ -141,9 +151,9 @@ public class MyService extends Service {
     }
 
 
-    private void startMusic(Song song) {
+    public void startMusic(Song song) {
         if (mMediaPlayer == null) {
-            mMediaPlayer = MediaPlayer.create(getApplicationContext(), song.getResource());
+            mMediaPlayer = MediaPlayer.create(getApplicationContext(), Uri.parse(song.getUrl()));
         }
         mMediaPlayer.start();
         isPlaying = true;
@@ -164,6 +174,49 @@ public class MyService extends Service {
         }
     }
 
+    public void previousSong() {
+        int position = MusicApplication.mData.indexOf(mSong);
+        if (position - 1 >= 0) {
+            mSong = MusicApplication.mData.get(position - 1);
+            Log.v("mSong", "position - 1");
+        } else {
+            mSong = MusicApplication.mData.get(MusicApplication.mData.size() - 1);
+            Log.v("mSong", "size - 1");
+        }
+        changedSong(mSong);
+
+        sendMediaPlayerNotification(mSong);
+        sendActionToActivity(ACTION_PREVIOUS);
+    }
+
+    public void nextSong() {
+        int position = MusicApplication.mData.indexOf(mSong);
+        if (position + 1 <= MusicApplication.mData.size() - 1) {
+            mSong = MusicApplication.mData.get(position + 1);
+            Log.v("mSong", "position + 1");
+        } else {
+            mSong = MusicApplication.mData.get(0);
+            Log.v("mSong", "0");
+        }
+        changedSong(mSong);
+
+        sendMediaPlayerNotification(mSong);
+        sendActionToActivity(ACTION_NEXT);
+    }
+
+    public void changedSong(Song song) {
+        if (mMediaPlayer != null) {
+            if (mMediaPlayer.isPlaying()) {
+                mMediaPlayer.stop();
+                mMediaPlayer.reset();
+                mMediaPlayer.release();
+            }
+            mMediaPlayer = MediaPlayer.create(getApplicationContext(), Uri.parse(song.getUrl()));
+            mMediaPlayer.start();
+            isPlaying = true;
+        }
+    }
+
     private void handleMediaPlayerNotification(int action) {
         switch (action) {
             case ACTION_PAUSE:
@@ -179,9 +232,11 @@ public class MyService extends Service {
                 break;
 
             case ACTION_PREVIOUS:
+                previousSong();
                 break;
 
             case ACTION_NEXT:
+                nextSong();
                 break;
         }
     }
