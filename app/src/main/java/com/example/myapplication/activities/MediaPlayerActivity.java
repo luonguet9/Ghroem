@@ -329,9 +329,8 @@ public class MediaPlayerActivity extends AppCompatActivity {
 
     private void onCompletionListener() {
         if (isRepeat == REPEAT_OFF) {
-            if (MyService.position + 1 <= MyService.mData.size() - 1) {
-                MyService.mSong = MyService.mData.get(MyService.position + 1);
-                Log.v("mSong", "position + 1");
+            if (MyService.position + 1 <= MyService.mData.size() - 1 || isShuffle) {
+                sendActionToService(MyService.ACTION_NEXT);
             } else {
                 sendActionToService(MyService.ACTION_PAUSE);
             }

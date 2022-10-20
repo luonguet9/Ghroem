@@ -23,6 +23,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.myapplication.R;
 import com.example.myapplication.activities.MainActivity;
+import com.example.myapplication.activities.MediaPlayerActivity;
 import com.example.myapplication.receivers.ActionReceiver;
 import com.example.myapplication.models.Song;
 
@@ -185,15 +186,24 @@ public class MyService extends Service {
     }
 
     public void previousSong() {
-        Log.v("position", position + "");
-        if (position - 1 >= 0) {
-            position -= 1;
+        if (MediaPlayerActivity.isShuffle) {
+            int randomPosition = (int) (Math.random() * mData.size());
+            while (randomPosition == position) {
+                randomPosition = (int) (Math.random() * mData.size());
+            }
+            Log.v("position_random", randomPosition + "");
+            position = randomPosition;
+            mSong = mData.get(position);
         } else {
-            position = mData.size() - 1;
+            Log.v("position", position + "");
+            if (position - 1 >= 0) {
+                position -= 1;
+            } else {
+                position = mData.size() - 1;
+            }
+            mSong = mData.get(position);
+            Log.v("position", "mSong_position" + position);
         }
-        mSong = mData.get(position);
-        Log.v("position", "mSong_position" + position);
-
         changedSong(mSong);
 
         sendMediaPlayerNotification(mSong);
@@ -201,14 +211,24 @@ public class MyService extends Service {
     }
 
     public void nextSong() {
-        Log.v("position", position + "");
-        if (position + 1 <= mData.size() - 1) {
-            position += 1;
+        if (MediaPlayerActivity.isShuffle) {
+            int randomPosition = (int) (Math.random() * mData.size());
+            while (randomPosition == position) {
+                randomPosition = (int) (Math.random() * mData.size());
+            }
+            Log.v("position_random", randomPosition + "");
+            position = randomPosition;
+            mSong = mData.get(position);
         } else {
-            position = 0;
+            Log.v("position", position + "");
+            if (position + 1 <= mData.size() - 1) {
+                position += 1;
+            } else {
+                position = 0;
+            }
+            mSong = mData.get(position);
+            Log.v("position", "mSong_position" + position);
         }
-        mSong = mData.get(position);
-        Log.v("position", "mSong_position" + position);
 
         changedSong(mSong);
 
