@@ -13,6 +13,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -37,11 +38,16 @@ public class MediaPlayerActivity extends AppCompatActivity {
 
     ImageView imgShuffle, imgPrevious, imgPlayOrPause, imgNext, imgRepeat;
 
-    MyService mService;
-    boolean isServiceConnected;
+    com.example.myapplication.services.MyService mService;
+    public boolean isServiceConnected;
     BroadcastReceiver mBroadcastReceiver;
 
-    public static boolean isShuffle, isRepeat;
+    public static boolean isShuffle;
+
+    public static final int REPEAT_ALL_ON = 2;
+    public static final int REPEAT_ONE_ON = 1;
+    public static final int REPEAT_OFF = 0;
+    public static int isRepeat = REPEAT_OFF;
 
     ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -141,22 +147,31 @@ public class MediaPlayerActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (isServiceConnected) {
+            unbindService(mServiceConnection);
+            isServiceConnected = false;
+        }
+
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
+        finish();
+    }
+
     private void handleMediaPlayer() {
-        imgSong.setImageResource(mService.mSong.getImageResource());
-        txtNameSong.setText(mService.mSong.getName());
-        txtSingerSong.setText(mService.mSong.getSinger());
+        imgSong.setImageResource(MyService.mSong.getImageResource());
+        txtNameSong.setText(MyService.mSong.getName());
+        txtSingerSong.setText(MyService.mSong.getSinger());
 
         setStatusPlayOrPause();
         setTimeTotal();
         updateTime();
 
         imgPlayOrPause.setOnClickListener(view -> {
-            if (mService.isPlaying) {
-                mService.pauseMusic();
-                stopAnimationImageSong();
+            if (MyService.isPlaying) {
                 sendActionToService(MyService.ACTION_PAUSE);
             } else {
-                mService.resumeMusic();
                 sendActionToService(MyService.ACTION_RESUME);
             }
 
@@ -184,10 +199,12 @@ public class MediaPlayerActivity extends AppCompatActivity {
         });
 
         imgRepeat.setOnClickListener(view -> {
-            if (isRepeat) {
-                isRepeat = false;
+            if (isRepeat == REPEAT_OFF) {
+                isRepeat = REPEAT_ONE_ON;
+            } else if (isRepeat == REPEAT_ONE_ON) {
+                isRepeat = REPEAT_ALL_ON;
             } else {
-                isRepeat = true;
+                isRepeat = REPEAT_OFF;
             }
 
             handleStatusRepeat();
@@ -248,10 +265,12 @@ public class MediaPlayerActivity extends AppCompatActivity {
     }
 
     private void handleStatusRepeat() {
-        if (isRepeat) {
+        if (isRepeat == REPEAT_OFF) {
+            imgRepeat.setImageResource(R.drawable.ic_baseline_repeat_off_24);
+        } else if (isRepeat == REPEAT_ONE_ON) {
             imgRepeat.setImageResource(R.drawable.ic_baseline_repeat_one_24);
         } else {
-            imgRepeat.setImageResource(R.drawable.ic_baseline_repeat_off_24);
+            imgRepeat.setImageResource(R.drawable.ic_baseline_repeat_on_24);
         }
     }
 
@@ -297,7 +316,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
             @Override
             public void run() {
                 if (mService.mMediaPlayer != null && isServiceConnected) {
-                    mService.mMediaPlayer.setOnCompletionListener(mediaPlayer -> next());
+                    mService.mMediaPlayer.setOnCompletionListener(mediaPlayer -> onCompletionListener());
                     SimpleDateFormat time = new SimpleDateFormat("mm:ss");
                     txtRunTime.setText(time.format(mService.mMediaPlayer.getCurrentPosition()));
                     seekBar.setProgress(mService.mMediaPlayer.getCurrentPosition());
@@ -308,8 +327,20 @@ public class MediaPlayerActivity extends AppCompatActivity {
 
     }
 
-    private void next() {
-        mService.nextSong();
+    private void onCompletionListener() {
+        if (isRepeat == REPEAT_OFF) {
+            if (MyService.position + 1 <= MyService.mData.size() - 1) {
+                MyService.mSong = MyService.mData.get(MyService.position + 1);
+                Log.v("mSong", "position + 1");
+            } else {
+                sendActionToService(MyService.ACTION_PAUSE);
+            }
+        } else if (isRepeat == REPEAT_ONE_ON) {
+            mService.changedSong(MyService.mSong);
+        } else {
+            // REPEAT ALL ON
+            sendActionToService(MyService.ACTION_NEXT);
+        }
         if (mService.mMediaPlayer != null) {
             setTimeTotal();
             handleMediaPlayer();

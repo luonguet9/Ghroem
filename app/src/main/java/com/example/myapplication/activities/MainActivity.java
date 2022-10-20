@@ -133,6 +133,12 @@ public class MainActivity extends AppCompatActivity {
         imgNext = findViewById(R.id.image_next);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
+    }
+
     private void handleBottomMediaPlayer() {
         layoutBottomMediaPlayer.setVisibility(View.VISIBLE);
         imgSong.setImageResource(MyService.mSong.getImageResource());
@@ -142,10 +148,8 @@ public class MainActivity extends AppCompatActivity {
 
         imgPlayOrPause.setOnClickListener(view -> {
             if (MyService.isPlaying) {
-                mService.pauseMusic();
                 sendActionToService(MyService.ACTION_PAUSE);
             } else {
-                mService.resumeMusic();
                 sendActionToService(MyService.ACTION_RESUME);
             }
 

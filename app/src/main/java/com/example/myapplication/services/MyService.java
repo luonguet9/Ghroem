@@ -5,7 +5,6 @@ import static com.example.myapplication.applications.MusicApplication.CHANNEL_ID
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -24,14 +23,17 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.myapplication.R;
 import com.example.myapplication.activities.MainActivity;
-import com.example.myapplication.applications.MusicApplication;
 import com.example.myapplication.receivers.ActionReceiver;
 import com.example.myapplication.models.Song;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MyService extends Service {
 
     public MediaPlayer mMediaPlayer;
     public static boolean isPlaying;
+    public static List<Song> mData = new ArrayList<>();
     public static Song mSong;
 
     public static final int ACTION_START = 0;
@@ -39,6 +41,8 @@ public class MyService extends Service {
     public static final int ACTION_RESUME = 2;
     public static final int ACTION_PREVIOUS = 3;
     public static final int ACTION_NEXT = 4;
+
+    public static int position = -1;
 
     IBinder myBinder = new MyBinder();
 
@@ -165,6 +169,9 @@ public class MyService extends Service {
             mMediaPlayer.pause();
             isPlaying = false;
         }
+
+        sendMediaPlayerNotification(mSong);
+        sendActionToActivity(ACTION_PAUSE);
     }
 
     public void resumeMusic() {
@@ -172,17 +179,21 @@ public class MyService extends Service {
             mMediaPlayer.start();
             isPlaying = true;
         }
+
+        sendMediaPlayerNotification(mSong);
+        sendActionToActivity(ACTION_RESUME);
     }
 
     public void previousSong() {
-        int position = MusicApplication.mData.indexOf(mSong);
+        Log.v("position", position + "");
         if (position - 1 >= 0) {
-            mSong = MusicApplication.mData.get(position - 1);
-            Log.v("mSong", "position - 1");
+            position -= 1;
         } else {
-            mSong = MusicApplication.mData.get(MusicApplication.mData.size() - 1);
-            Log.v("mSong", "size - 1");
+            position = mData.size() - 1;
         }
+        mSong = mData.get(position);
+        Log.v("position", "mSong_position" + position);
+
         changedSong(mSong);
 
         sendMediaPlayerNotification(mSong);
@@ -190,14 +201,15 @@ public class MyService extends Service {
     }
 
     public void nextSong() {
-        int position = MusicApplication.mData.indexOf(mSong);
-        if (position + 1 <= MusicApplication.mData.size() - 1) {
-            mSong = MusicApplication.mData.get(position + 1);
-            Log.v("mSong", "position + 1");
+        Log.v("position", position + "");
+        if (position + 1 <= mData.size() - 1) {
+            position += 1;
         } else {
-            mSong = MusicApplication.mData.get(0);
-            Log.v("mSong", "0");
+            position = 0;
         }
+        mSong = mData.get(position);
+        Log.v("position", "mSong_position" + position);
+
         changedSong(mSong);
 
         sendMediaPlayerNotification(mSong);
@@ -221,14 +233,10 @@ public class MyService extends Service {
         switch (action) {
             case ACTION_PAUSE:
                 pauseMusic();
-                sendMediaPlayerNotification(mSong);
-                sendActionToActivity(action);
                 break;
 
             case ACTION_RESUME:
                 resumeMusic();
-                sendMediaPlayerNotification(mSong);
-                sendActionToActivity(action);
                 break;
 
             case ACTION_PREVIOUS:

@@ -1,6 +1,5 @@
 package com.example.myapplication.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -13,19 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
-import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.activities.MainActivity;
 import com.example.myapplication.adapters.SongAdapter;
-import com.example.myapplication.applications.MusicApplication;
 import com.example.myapplication.models.Song;
 import com.example.myapplication.services.MyService;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -46,7 +40,7 @@ public class HomeFragment extends Fragment {
     RecyclerView mRecyclerView;
     SongAdapter mSongAdapter;
     List<Song> mListSong;
-    MyService mService;
+    com.example.myapplication.services.MyService mService;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -90,11 +84,11 @@ public class HomeFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
 
-        mListSong = MusicApplication.mData;
+        mListSong = MyService.mData;
         mSongAdapter = new SongAdapter(mListSong, new SongAdapter.IOnItemClickListener() {
             @Override
-            public void onItemClickListener(Song song) {
-                startMusic(song);
+            public void onItemClickListener(Song song, int position) {
+                startMusic(song, position);
             }
 
             @Override
@@ -128,12 +122,16 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-    private void startMusic(Song song) {
+    private void startMusic(Song song, int position) {
         if (((MainActivity) requireActivity()).isServiceConnected) {
+            MyService.mSong = song;
+            MyService.position = position;
             ((MainActivity) requireActivity()).onClickStopService();
-            ((MainActivity) requireActivity()).onClickStartService(song);
+            ((MainActivity) requireActivity()).onClickStartService(MyService.mSong);
         } else {
-            ((MainActivity) requireActivity()).onClickStartService(song);
+            MyService.mSong = song;
+            MyService.position = position;
+            ((MainActivity) requireActivity()).onClickStartService(MyService.mSong);
         }
     }
 

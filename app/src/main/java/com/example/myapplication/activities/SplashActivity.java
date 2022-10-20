@@ -7,7 +7,6 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -18,8 +17,8 @@ import android.provider.MediaStore;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
-import com.example.myapplication.applications.MusicApplication;
 import com.example.myapplication.models.Song;
+import com.example.myapplication.services.MyService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +52,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void fetchSongs() {
-        if (MusicApplication.mData != null && !MusicApplication.mData.isEmpty()) {
+        if (MyService.mData != null && !MyService.mData.isEmpty()) {
             return;
         }
 
@@ -87,7 +86,7 @@ public class SplashActivity extends AppCompatActivity {
                 }
                 cursor.close();
                 //mSongList.sort(Constant.songComparator);
-                MusicApplication.mData = new ArrayList<>(mSongList);
+                MyService.mData = new ArrayList<>(mSongList);
                 //loadAlbumPicThread.start();
                 //loadAlbum.start();
             });

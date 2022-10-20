@@ -30,7 +30,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.MyViewHolder> 
     }
 
     public interface IOnItemClickListener {
-        void onItemClickListener(Song song);
+        void onItemClickListener(Song song, int position);
         void onMoreButtonClickListener(Song song, View view);
     }
 
@@ -59,7 +59,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.MyViewHolder> 
         });
 
         holder.itemView.setOnClickListener(view -> {
-            iOnItemClickListener.onItemClickListener(song);
+            iOnItemClickListener.onItemClickListener(song, position);
         });
     }
 
