@@ -10,10 +10,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.example.myapplication.R;
 import com.example.myapplication.services.MyService;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 
 public class MediaPlayerActivity extends AppCompatActivity {
@@ -47,7 +48,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
     public static final int REPEAT_ALL_ON = 2;
     public static final int REPEAT_ONE_ON = 1;
     public static final int REPEAT_OFF = 0;
-    public static int isRepeat = REPEAT_OFF;
+    public static int statusRepeat = REPEAT_OFF;
 
     ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -160,11 +161,19 @@ public class MediaPlayerActivity extends AppCompatActivity {
     }
 
     private void handleMediaPlayer() {
-        imgSong.setImageResource(MyService.mSong.getImageResource());
+        //imgSong.setImageResource(MyService.mSong.getImageResource());
+        Uri artworkUri = MyService.mSong.getAlbumUri();
+        if (artworkUri != null) {
+            imgSong.setImageURI(artworkUri);
+        } else {
+            imgSong.setImageResource(MyService.mSong.getImageResource());
+        }
         txtNameSong.setText(MyService.mSong.getName());
         txtSingerSong.setText(MyService.mSong.getSinger());
 
         setStatusPlayOrPause();
+        setStatusShuffle();
+        setStatusRepeat();
         setTimeTotal();
         updateTime();
 
@@ -195,19 +204,19 @@ public class MediaPlayerActivity extends AppCompatActivity {
                 isShuffle = true;
             }
 
-            handleStatusShuffle();
+            setStatusShuffle();
         });
 
         imgRepeat.setOnClickListener(view -> {
-            if (isRepeat == REPEAT_OFF) {
-                isRepeat = REPEAT_ONE_ON;
-            } else if (isRepeat == REPEAT_ONE_ON) {
-                isRepeat = REPEAT_ALL_ON;
+            if (statusRepeat == REPEAT_OFF) {
+                statusRepeat = REPEAT_ONE_ON;
+            } else if (statusRepeat == REPEAT_ONE_ON) {
+                statusRepeat = REPEAT_ALL_ON;
             } else {
-                isRepeat = REPEAT_OFF;
+                statusRepeat = REPEAT_OFF;
             }
 
-            handleStatusRepeat();
+            setStatusRepeat();
         });
 
         imgFavorite.setOnClickListener(view -> {
@@ -247,7 +256,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
             return;
         }
 
-        if (mService.isPlaying) {
+        if (MyService.isPlaying) {
             startAnimationImageSong();
             imgPlayOrPause.setImageResource(R.drawable.ic_baseline_pause_circle_24);
         } else {
@@ -256,7 +265,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
         }
     }
 
-    private void handleStatusShuffle() {
+    private void setStatusShuffle() {
         if (isShuffle) {
             imgShuffle.setImageResource(R.drawable.ic_baseline_shuffle_on_24);
         } else {
@@ -264,10 +273,10 @@ public class MediaPlayerActivity extends AppCompatActivity {
         }
     }
 
-    private void handleStatusRepeat() {
-        if (isRepeat == REPEAT_OFF) {
+    private void setStatusRepeat() {
+        if (statusRepeat == REPEAT_OFF) {
             imgRepeat.setImageResource(R.drawable.ic_baseline_repeat_off_24);
-        } else if (isRepeat == REPEAT_ONE_ON) {
+        } else if (statusRepeat == REPEAT_ONE_ON) {
             imgRepeat.setImageResource(R.drawable.ic_baseline_repeat_one_24);
         } else {
             imgRepeat.setImageResource(R.drawable.ic_baseline_repeat_on_24);
@@ -328,13 +337,13 @@ public class MediaPlayerActivity extends AppCompatActivity {
     }
 
     private void onCompletionListener() {
-        if (isRepeat == REPEAT_OFF) {
+        if (statusRepeat == REPEAT_OFF) {
             if (MyService.position + 1 <= MyService.mData.size() - 1 || isShuffle) {
                 sendActionToService(MyService.ACTION_NEXT);
             } else {
                 sendActionToService(MyService.ACTION_PAUSE);
             }
-        } else if (isRepeat == REPEAT_ONE_ON) {
+        } else if (statusRepeat == REPEAT_ONE_ON) {
             mService.changedSong(MyService.mSong);
         } else {
             // REPEAT ALL ON

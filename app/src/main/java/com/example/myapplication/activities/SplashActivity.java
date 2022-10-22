@@ -7,9 +7,11 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,6 +22,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.models.Song;
 import com.example.myapplication.services.MyService;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,6 +69,7 @@ public class SplashActivity extends AppCompatActivity {
                     MediaStore.Audio.Media.ARTIST,
                     MediaStore.Audio.Media.DATA,
                     MediaStore.Audio.Media.DATE_ADDED,
+                    MediaStore.Audio.Media.ALBUM_ID,
             };
 
             String sortOrder = MediaStore.Audio.Media.TITLE + " ASC";
@@ -81,7 +85,10 @@ public class SplashActivity extends AppCompatActivity {
                     String songSinger = cursor.getString(3);
                     String songURL = cursor.getString(4);
                     String addedDate = cursor.getString(5);
-                    Song song = new Song(songId, songName, songAlbum, R.drawable.spotify_blue, songSinger, songURL, addedDate);
+                    long albumId = cursor.getLong(6);
+
+                    Uri albumartUri = ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"),albumId);
+                    Song song = new Song(songId, songName, songAlbum, R.drawable.spotify_blue, songSinger, songURL, addedDate, albumartUri);
                     mSongList.add(song);
                 }
                 cursor.close();

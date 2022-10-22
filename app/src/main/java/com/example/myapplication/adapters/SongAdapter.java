@@ -1,5 +1,6 @@
 package com.example.myapplication.adapters;
 
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +50,13 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.MyViewHolder> 
             return;
         }
 
-        holder.imgSong.setImageResource(song.getImageResource());
+        //holder.imgSong.setImageResource(song.getImageResource());
+        Uri artworkUri = song.getAlbumUri();
+        if (artworkUri != null) {
+            holder.imgSong.setImageURI(artworkUri);
+        } else {
+            holder.imgSong.setImageResource(song.getImageResource());
+        }
 
         holder.txtNameSong.setText(song.getName());
         holder.txtSingleSong.setText(song.getSinger());

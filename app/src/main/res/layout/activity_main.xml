@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_solid_blue"
+    android:theme="@style/Theme.MyApplication"
     tools:context=".activities.MainActivity">
 
     <androidx.viewpager2.widget.ViewPager2

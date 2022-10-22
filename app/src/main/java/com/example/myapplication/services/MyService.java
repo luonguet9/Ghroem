@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
@@ -27,6 +28,7 @@ import com.example.myapplication.activities.MediaPlayerActivity;
 import com.example.myapplication.receivers.ActionReceiver;
 import com.example.myapplication.models.Song;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -123,12 +125,12 @@ public class MyService extends Service {
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), song.getImageResource());
+
+        //Bitmap bitmap = BitmapFactory.decodeResource(getResources(), song.getImageResource());
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_baseline_music_note_24)
                 .setContentTitle(song.getName())
                 .setContentText(song.getSinger())
-                .setLargeIcon(bitmap)
                 .setContentIntent(pendingIntent)
                 .setStyle(new androidx.media.app.NotificationCompat.MediaStyle().setShowActionsInCompactView(0, 1, 2));
 
@@ -140,6 +142,27 @@ public class MyService extends Service {
             builder.addAction(R.drawable.ic_baseline_skip_previous_black_24, "Previous", getPendingIntent(this, ACTION_PREVIOUS))
                     .addAction(R.drawable.ic_baseline_play_arrow_24, "Resume", getPendingIntent(this, ACTION_RESUME))
                     .addAction(R.drawable.ic_baseline_skip_next_black_24, "Next", getPendingIntent(this, ACTION_NEXT));
+        }
+
+        Uri artworkUri = song.getAlbumUri();
+        if (artworkUri != null) {
+            MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+            Bitmap bitmap = null;
+            try {
+                mmr.setDataSource(song.getUrl());
+                byte[] artBytes = mmr.getEmbeddedPicture();
+                if (artBytes != null) {
+                    bitmap = BitmapFactory.decodeByteArray(artBytes, 0, artBytes.length);
+                }
+            } catch (Exception e) {
+                Log.v("Song", "Song Doesn't Have Embedded Picture " + song.getUrl());
+                e.printStackTrace();
+            }
+            mmr.release();
+            builder.setLargeIcon(bitmap);
+        } else {
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), song.getImageResource());
+            builder.setLargeIcon(bitmap);
         }
 
         Notification notification = builder.build();

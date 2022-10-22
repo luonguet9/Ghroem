@@ -10,8 +10,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -23,6 +25,7 @@ import com.example.myapplication.models.Song;
 import com.example.myapplication.services.MyService;
 import com.example.myapplication.utilities.DepthPageTransformer;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -134,6 +137,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        Log.v("onResume", "onResume");
+        Log.v("onResume", MyService.mSong + "");
+        if (MyService.mSong != null) {
+            Intent intent = new Intent(this, MyService.class);
+            bindService(intent, mServiceConnection, BIND_AUTO_CREATE);
+            handleBottomMediaPlayer();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (isServiceConnected) {
+            unbindService(mServiceConnection);
+            isServiceConnected = false;
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
@@ -141,7 +165,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleBottomMediaPlayer() {
         layoutBottomMediaPlayer.setVisibility(View.VISIBLE);
-        imgSong.setImageResource(MyService.mSong.getImageResource());
+        Uri artworkUri = MyService.mSong.getAlbumUri();
+        if (artworkUri != null) {
+           imgSong.setImageURI(artworkUri);
+        } else {
+            imgSong.setImageResource(MyService.mSong.getImageResource());
+        }
+        //imgSong.setImageResource(MyService.mSong.getImageResource());
         txtNameSong.setText(MyService.mSong.getName());
         txtSingerSong.setText(MyService.mSong.getSinger());
         setStatusPlayOrPause();
