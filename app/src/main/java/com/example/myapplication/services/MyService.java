@@ -45,7 +45,7 @@ public class MyService extends Service {
     public static final int ACTION_PREVIOUS = 3;
     public static final int ACTION_NEXT = 4;
 
-    public static int position = -1;
+    //public static int position = -1;
 
     IBinder myBinder = new MyBinder();
 
@@ -209,6 +209,13 @@ public class MyService extends Service {
     }
 
     public void previousSong() {
+        int position = -1;
+        for (int i = 0; i < mData.size(); i++) {
+            if (mData.get(i).getUrl().equals(mSong.getUrl())) {
+                position = i;
+            }
+        }
+
         if (MediaPlayerActivity.isShuffle) {
             int randomPosition = (int) (Math.random() * mData.size());
             while (randomPosition == position) {
@@ -234,6 +241,13 @@ public class MyService extends Service {
     }
 
     public void nextSong() {
+        int position = -1;
+        for (int i = 0; i < mData.size(); i++) {
+            if (mData.get(i).getUrl().equals(mSong.getUrl())) {
+                position = i;
+            }
+        }
+
         if (MediaPlayerActivity.isShuffle) {
             int randomPosition = (int) (Math.random() * mData.size());
             while (randomPosition == position) {
