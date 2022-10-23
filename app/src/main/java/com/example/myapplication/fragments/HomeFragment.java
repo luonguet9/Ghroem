@@ -1,10 +1,14 @@
 package com.example.myapplication.fragments;
 
+import android.graphics.Canvas;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -12,17 +16,21 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.activities.MainActivity;
 import com.example.myapplication.adapters.SongAdapter;
 import com.example.myapplication.models.Song;
 import com.example.myapplication.services.MyService;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -138,15 +146,21 @@ public class HomeFragment extends Fragment {
         mRecyclerView.setAdapter(mSongAdapter);
         ViewCompat.setNestedScrollingEnabled(mRecyclerView, false);
 
+        handleSwipeItem();
+
         handleTextTitle();
 
         btPlay.setOnClickListener(view1 -> {
-            startMusic(mListSong.get(0));
+            if (mListSong != null && mListSong.size() > 0) {
+                startMusic(mListSong.get(0));
+            }
         });
 
         btShuffle.setOnClickListener(view1 -> {
-            int randomPosition = (int) (Math.random() * mListSong.size());
-            startMusic(mListSong.get(randomPosition));
+            if (mListSong != null && mListSong.size() > 0) {
+                int randomPosition = (int) (Math.random() * mListSong.size());
+                startMusic(mListSong.get(randomPosition));
+            }
         });
 
         imgSort.setOnClickListener(view1 -> {
@@ -157,19 +171,22 @@ public class HomeFragment extends Fragment {
                     case R.id.sort_title:
                         sortByTitle(mListSong);
                         MyService.mData = mListSong;
-                        mSongAdapter.setData(mListSong);
+                        //mSongAdapter.setData(mListSong);
+                        loadDataWithAnimation();
                         return true;
 
                     case R.id.sort_artist:
                         sortByArtist(mListSong);
                         MyService.mData = mListSong;
-                        mSongAdapter.setData(mListSong);
+                        //mSongAdapter.setData(mListSong);
+                        loadDataWithAnimation();
                         return true;
 
                     case R.id.sort_added_time:
                         sortByAddedTime(mListSong);
                         MyService.mData = mListSong;
-                        mSongAdapter.setData(mListSong);
+                        //mSongAdapter.setData(mListSong);
+                        loadDataWithAnimation();
                         return true;
 
                     default:
@@ -191,23 +208,82 @@ public class HomeFragment extends Fragment {
         btShuffle = view.findViewById(R.id.button_shuffle);
     }
 
+    private void handleSwipeItem() {
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return true;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                if (viewHolder instanceof SongAdapter.MyViewHolder) {
+                    int position = viewHolder.getAdapterPosition();
+                    Song song = mListSong.get(position);
+                    mSongAdapter.removeSong(position);
+                }
+            }
+
+            @Override
+            public void onSelectedChanged(@Nullable RecyclerView.ViewHolder viewHolder, int actionState) {
+                if (viewHolder != null) {
+                    View foreGroundView = ((SongAdapter.MyViewHolder) viewHolder).layoutForeground;
+                    getDefaultUIUtil().onSelected(foreGroundView);
+                }
+            }
+
+            @Override
+            public void onChildDrawOver(@NonNull Canvas c, @NonNull RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                assert viewHolder != null;
+                View foreGroundView = ((SongAdapter.MyViewHolder) viewHolder).layoutForeground;
+                getDefaultUIUtil().onDrawOver(c, recyclerView, foreGroundView, dX, dY, actionState, isCurrentlyActive);
+            }
+
+            @Override
+            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder,
+                                    float dX, float dY, int actionState, boolean isCurrentlyActive) {
+
+                View foreGroundView = ((SongAdapter.MyViewHolder) viewHolder).layoutForeground;
+                getDefaultUIUtil().onDraw(c, recyclerView, foreGroundView, dX, dY, actionState, isCurrentlyActive);
+
+
+            }
+
+            @Override
+            public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+
+                View foreGroundView = ((SongAdapter.MyViewHolder) viewHolder).layoutForeground;
+                getDefaultUIUtil().clearView(foreGroundView);
+            }
+        }).attachToRecyclerView(mRecyclerView);
+    }
+
+    private void loadDataWithAnimation() {
+        LayoutAnimationController layoutAnimationController = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_animation_up_to_down);
+        mRecyclerView.setLayoutAnimation(layoutAnimationController);
+        mSongAdapter.setData(mListSong);
+        mRecyclerView.setAdapter(mSongAdapter);
+    }
+
     private void handleTextTitle() {
         DateFormat dateFormat = new SimpleDateFormat("HH");
         String date = dateFormat.format(Calendar.getInstance().getTime());
         int hour = Integer.parseInt(date);
         if (5 <= hour && hour < 12) {
             txtHello.setText("Good morning");
-        }
-
-        if (hour >= 12 && hour < 19) {
-            txtHello.setText("Good afternoon");
-        }
-
-        if (hour >= 19 && hour < 22) {
-            txtHello.setText("Good evening");
         } else {
-            txtHello.setText("Good night");
+            if (hour >= 12 && hour < 19) {
+                txtHello.setText("Good afternoon");
+            } else {
+                if (hour >= 19 && hour < 22) {
+                    txtHello.setText("Good evening");
+                } else {
+                    txtHello.setText("Good night");
+                }
+            }
         }
+
+
     }
 
     private void startMusic(Song song) {

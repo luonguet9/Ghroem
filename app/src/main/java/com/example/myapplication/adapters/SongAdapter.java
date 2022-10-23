@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
@@ -78,11 +79,13 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.MyViewHolder> 
         return mData.size();
     }
 
-    static class MyViewHolder extends RecyclerView.ViewHolder {
+    public class MyViewHolder extends RecyclerView.ViewHolder {
 
         ImageView imgSong;
         TextView txtNameSong, txtSingleSong;
         ImageView imgMore;
+
+        public ConstraintLayout layoutForeground;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -91,6 +94,12 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.MyViewHolder> 
             txtNameSong = itemView.findViewById(R.id.text_name_song);
             txtSingleSong = itemView.findViewById(R.id.text_singer_song);
             imgMore = itemView.findViewById(R.id.image_more);
+            layoutForeground = itemView.findViewById(R.id.layout_foreground);
         }
+    }
+
+    public void removeSong(int position) {
+        mData.remove(position);
+        notifyItemRemoved(position);
     }
 }
