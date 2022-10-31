@@ -1,6 +1,11 @@
 package com.example.myapplication.fragments;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -12,12 +17,18 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -27,13 +38,18 @@ import android.widget.Toast;
 
 import com.example.myapplication.R;
 import com.example.myapplication.activities.MainActivity;
+import com.example.myapplication.activities.PlaylistDetailActivity;
+import com.example.myapplication.activities.SplashActivity;
 import com.example.myapplication.adapters.SongAdapter;
+import com.example.myapplication.database.AppDatabase;
+import com.example.myapplication.dialogs.AddToPlaylistDialog;
+import com.example.myapplication.models.Playlist;
 import com.example.myapplication.models.Song;
 import com.example.myapplication.services.MyService;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -110,7 +126,7 @@ public class HomeFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
 
-        mListSong = MyService.mData;
+        mListSong = SplashActivity.mSongList;
         mSongAdapter = new SongAdapter(mListSong, new SongAdapter.IOnItemClickListener() {
             @Override
             public void onItemClickListener(Song song) {
@@ -121,17 +137,42 @@ public class HomeFragment extends Fragment {
             public void onMoreButtonClickListener(Song song, View view) {
                 ImageView imgMore = view.findViewById(R.id.image_more);
                 PopupMenu popupMenu = new PopupMenu(getContext(), imgMore);
-                popupMenu.getMenuInflater().inflate(R.menu.menu_more_button, popupMenu.getMenu());
+                popupMenu.getMenuInflater().inflate(R.menu.menu_more_song, popupMenu.getMenu());
+                MenuItem menuItemDelete = popupMenu.getMenu().findItem(R.id.action_delete_from_playlist);
+                MenuItem menuItemLove = popupMenu.getMenu().findItem(R.id.action_love);
+                MenuItem menuItemUnLove = popupMenu.getMenu().findItem(R.id.action_un_love);
+
+                for (Song temp : AppDatabase.getInstance(getContext()).playlistDao().getAllSongsInPlaylist(1)) {
+                    if (temp.getUrl().equals(song.getUrl())) {
+                        song.isLove = true;
+                        break;
+                    }
+                }
+
+                if (song.isLove) {
+                    menuItemLove.setVisible(false);
+                    menuItemUnLove.setVisible(true);
+                } else {
+                    menuItemLove.setVisible(true);
+                    menuItemUnLove.setVisible(false);
+                }
+
+                menuItemDelete.setVisible(false);
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
                         switch (menuItem.getItemId()) {
                             case R.id.action_love:
-                                //TODO
+                                handleActionLove(song);
+                                return true;
+
+                            case R.id.action_un_love:
+                                handleActionUnLove(song);
                                 return true;
 
                             case R.id.action_add_to_playlist:
-                                //TODO
+                                AddToPlaylistDialog addToPlaylistDialog = new AddToPlaylistDialog(song);
+                                addToPlaylistDialog.show(getActivity().getSupportFragmentManager(), "");
                                 return true;
 
                             default:
@@ -170,21 +211,21 @@ public class HomeFragment extends Fragment {
                 switch (menuItem.getItemId()) {
                     case R.id.sort_title:
                         sortByTitle(mListSong);
-                        MyService.mData = mListSong;
+                        //MyService.mData = mListSong;
                         //mSongAdapter.setData(mListSong);
                         loadDataWithAnimation();
                         return true;
 
                     case R.id.sort_artist:
                         sortByArtist(mListSong);
-                        MyService.mData = mListSong;
+                        //MyService.mData = mListSong;
                         //mSongAdapter.setData(mListSong);
                         loadDataWithAnimation();
                         return true;
 
                     case R.id.sort_added_time:
                         sortByAddedTime(mListSong);
-                        MyService.mData = mListSong;
+                        //MyService.mData = mListSong;
                         //mSongAdapter.setData(mListSong);
                         loadDataWithAnimation();
                         return true;
@@ -194,6 +235,30 @@ public class HomeFragment extends Fragment {
                 }
             });
             popupMenu.show();
+        });
+
+        edtSearch.setOnEditorActionListener((textView, i, keyEvent) -> {
+            if (i == EditorInfo.IME_ACTION_SEARCH) {
+                searchSong();
+            }
+            return false;
+        });
+
+        edtSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                searchSong();
+            }
         });
 
         return view;
@@ -220,7 +285,9 @@ public class HomeFragment extends Fragment {
                 if (viewHolder instanceof SongAdapter.MyViewHolder) {
                     int position = viewHolder.getAdapterPosition();
                     Song song = mListSong.get(position);
-                    mSongAdapter.removeSong(position);
+                    //mSongAdapter.removeSong(position);
+                    removeSong(position);
+                    //handleActionLove(song);
                 }
             }
 
@@ -289,12 +356,30 @@ public class HomeFragment extends Fragment {
     private void startMusic(Song song) {
         if (((MainActivity) requireActivity()).isServiceConnected) {
             MyService.mSong = song;
+            MyService.mData = SplashActivity.mSongList;
             ((MainActivity) requireActivity()).onClickStopService();
             ((MainActivity) requireActivity()).onClickStartService(MyService.mSong);
         } else {
             MyService.mSong = song;
+            MyService.mData = SplashActivity.mSongList;
             ((MainActivity) requireActivity()).onClickStartService(MyService.mSong);
         }
+    }
+
+    private void removeSong(int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+        builder.setTitle("Delete this song")
+                .setMessage("Are you sure to delete?")
+                .setNegativeButton("No", null)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mSongAdapter.removeSong(position);
+                        Toast.makeText(getContext(), "Delete successfully!", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .show();
     }
 
     private void sortByTitle(List<Song> list) {
@@ -312,5 +397,51 @@ public class HomeFragment extends Fragment {
     private void sortByAddedTime(List<Song> list) {
         Collections.sort(list, (song, t1) -> t1.getAddedDate().compareTo(song.getAddedDate()));
     }
+
+    private void handleActionLove(Song song) {
+        for (Song temp : AppDatabase.getInstance(getContext()).playlistDao().getAllSongsInPlaylist(1)) {
+            if (temp.getUrl().equals(song.getUrl())) {
+                Toast.makeText(getContext(), "This song has exists!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+        song.isLove = true;
+        Song newSong = song.copySong();
+        newSong.isLove = true;
+        newSong.playlistId = 1;
+        PlaylistDetailActivity.viewModel.insertSong(newSong);
+        Toast.makeText(getContext(), "Added to favorite playlist", Toast.LENGTH_SHORT).show();
+    }
+
+    private void handleActionUnLove(Song song) {
+        song.isLove = false;
+        for (Song temp : AppDatabase.getInstance(getContext()).playlistDao().getAllSongsInPlaylist(1)) {
+            if (temp.getUrl().equals(song.getUrl())) {
+                PlaylistDetailActivity.viewModel.deleteSong(temp);
+                Toast.makeText(getContext(), "Remove from favorite playlist", Toast.LENGTH_SHORT).show();
+            }
+
+            if (MyService.mSong != null && MyService.mSong.getUrl().equals(song.getUrl())) {
+                MyService.mSong.isLove = false;
+            }
+        }
+
+    }
+
+    private void searchSong() {
+        String keyword = edtSearch.getText().toString().trim().toLowerCase();
+        //mListSong = AppDatabase.getInstance(getContext()).playlistDao().searchSong(keyword);
+        List<Song> list = new ArrayList<>();
+        for (Song song : mListSong) {
+            if (song.getName().toLowerCase().contains(keyword)) {
+                list.add(song);
+            }
+        }
+
+
+        mSongAdapter.setData(list);
+
+    }
+
 
 }

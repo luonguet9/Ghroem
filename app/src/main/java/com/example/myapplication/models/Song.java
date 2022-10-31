@@ -9,9 +9,16 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
 import java.io.Serializable;
 
+@Entity(tableName = "song")
 public class Song implements Serializable, Parcelable {
+    @PrimaryKey(autoGenerate = true)
     private int id;
     private String name;
     private String album;
@@ -21,6 +28,22 @@ public class Song implements Serializable, Parcelable {
     private String addedDate;
     private Uri albumUri;
 
+    public int playlistId;
+
+    public boolean isLove;
+
+    public Song() {
+    }
+
+    public Song(String name, String album, int imageResource, String singer, String url, String addedDate, Uri albumUri) {
+        this.name = name;
+        this.album = album;
+        this.imageResource = imageResource;
+        this.singer = singer;
+        this.url = url;
+        this.addedDate = addedDate;
+        this.albumUri = albumUri;
+    }
 
     public Song(int id, String name, String album, int imageResource, String singer, String url, String addedDate) {
         this.id = id;
@@ -145,5 +168,15 @@ public class Song implements Serializable, Parcelable {
         parcel.writeString(url);
         parcel.writeString(addedDate);
         parcel.writeParcelable(albumUri, i);
+    }
+
+    @NonNull
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    public Song copySong() {
+        return new Song(this.name, this.album, this.imageResource, this.singer, this.url, this.addedDate, this.albumUri);
     }
 }

@@ -29,7 +29,7 @@ import java.util.List;
 public class SplashActivity extends AppCompatActivity {
 
     ActivityResultLauncher<String> storagePermissionLauncher;
-    List<Song> mSongList;
+    public static List<Song> mSongList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

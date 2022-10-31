@@ -1,6 +1,7 @@
 package com.example.myapplication.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -24,13 +25,14 @@ import com.example.myapplication.adapters.ViewPagerAdapter;
 import com.example.myapplication.models.Song;
 import com.example.myapplication.services.MyService;
 import com.example.myapplication.utilities.DepthPageTransformer;
+import com.example.myapplication.viewmodel.PlaylistViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 
 public class MainActivity extends AppCompatActivity {
 
     public MyService mService;
-    public boolean isServiceConnected;
+    public static boolean isServiceConnected;
     BroadcastReceiver mBroadcastReceiver;
 
     ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -78,10 +80,11 @@ public class MainActivity extends AppCompatActivity {
 
         initView();
 
-
         layoutBottomMediaPlayer.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, MediaPlayerActivity.class)));
 
-        //onClickStartService();
+        if (PlaylistDetailActivity.viewModel == null) {
+            PlaylistDetailActivity.viewModel = new ViewModelProvider(this).get(PlaylistViewModel.class);
+        }
 
     }
 
@@ -89,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
         mBottomNavigationView = findViewById(R.id.bottom_navigation);
         mViewPager2 = findViewById(R.id.view_pager2);
         mViewPager2.setAdapter(new ViewPagerAdapter(this));
+        mViewPager2.setOffscreenPageLimit(3);
         mViewPager2.setPageTransformer(new DepthPageTransformer());
         mViewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -244,7 +248,6 @@ public class MainActivity extends AppCompatActivity {
 
         stopService(new Intent(this, MyService.class));
 
-        //layoutBottomMediaPlayer.setVisibility(View.GONE);
     }
 
     private void setStatusPlayOrPause() {

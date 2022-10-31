@@ -3,7 +3,6 @@ package com.example.myapplication.activities;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -14,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.view.MotionEvent;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -22,9 +22,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
+import com.example.myapplication.database.AppDatabase;
+import com.example.myapplication.models.Song;
 import com.example.myapplication.services.MyService;
 
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 
 public class MediaPlayerActivity extends AppCompatActivity {
@@ -39,7 +40,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
 
     ImageView imgShuffle, imgPrevious, imgPlayOrPause, imgNext, imgRepeat;
 
-    com.example.myapplication.services.MyService mService;
+    MyService mService;
     public boolean isServiceConnected;
     BroadcastReceiver mBroadcastReceiver;
 
@@ -80,7 +81,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
 
 
 
-    @SuppressLint("ClickableViewAccessibility")
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -141,7 +142,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
         imgRepeat = findViewById(R.id.image_repeat);
 
         imgDown.setOnClickListener(view -> {
-            finish();
+            //finish();
             onBackPressed();
         });
 
@@ -166,7 +167,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
         if (artworkUri != null) {
             imgSong.setImageURI(artworkUri);
         } else {
-            imgSong.setImageResource(MyService.mSong.getImageResource());
+            imgSong.setImageResource(R.drawable.spotify_blue);
         }
         txtNameSong.setText(MyService.mSong.getName());
         txtSingerSong.setText(MyService.mSong.getSinger());
@@ -174,6 +175,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
         setStatusPlayOrPause();
         setStatusShuffle();
         setStatusRepeat();
+        setStatusFavorite();
         setTimeTotal();
         updateTime();
 
@@ -220,7 +222,16 @@ public class MediaPlayerActivity extends AppCompatActivity {
         });
 
         imgFavorite.setOnClickListener(view -> {
-            handleOnClickFavorite();
+            if (MyService.mSong.isLove) {
+                MyService.mSong.isLove = false;
+                //Delete from favorite playlist
+                deleteSongFromFavoritePlaylist(MyService.mSong);
+            } else {
+                MyService.mSong.isLove = true;
+                // Add to favorite playlist
+                addSongToFavoritePlaylist(MyService.mSong);
+            }
+            setStatusFavorite();
         });
 
     }
@@ -283,8 +294,20 @@ public class MediaPlayerActivity extends AppCompatActivity {
         }
     }
 
-    private void handleOnClickFavorite() {
-        Toast.makeText(this, "Chưa xử lý", Toast.LENGTH_SHORT).show();
+    private void setStatusFavorite() {
+        for (Song song : AppDatabase.getInstance(this).playlistDao().getAllSongsInPlaylist(1)) {
+            if (song.getUrl().equals(MyService.mSong.getUrl())) {
+                MyService.mSong.isLove = true;
+                break;
+            }
+        }
+
+        if (MyService.mSong.isLove) {
+            imgFavorite.setImageResource(R.drawable.ic_baseline_favorite_on_24);
+        } else {
+            imgFavorite.setImageResource(R.drawable.ic_baseline_favorite_off_24);
+        }
+
     }
 
     private void sendActionToService(int action) {
@@ -359,6 +382,37 @@ public class MediaPlayerActivity extends AppCompatActivity {
         if (mService.mMediaPlayer != null) {
             setTimeTotal();
             handleMediaPlayer();
+        }
+    }
+
+    private void addSongToFavoritePlaylist(Song song){
+        for (Song temp : AppDatabase.getInstance(this).playlistDao().getAllSongsInPlaylist(1)) {
+            if (temp.getUrl().equals(song.getUrl())) {
+                Toast.makeText(this, "This song has exists!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+        song.isLove = true;
+        Song newSong = song.copySong();
+        newSong.isLove = true;
+        newSong.playlistId = 1;
+        PlaylistDetailActivity.viewModel.insertSong(newSong);
+        Toast.makeText(this, "Added to favorite playlist", Toast.LENGTH_SHORT).show();
+    }
+
+    private void deleteSongFromFavoritePlaylist(Song song) {
+        song.isLove = false;
+        for (Song temp : AppDatabase.getInstance(this).playlistDao().getAllSongsInPlaylist(1)) {
+            if (temp.getUrl().equals(song.getUrl())) {
+                PlaylistDetailActivity.viewModel.deleteSong(temp);
+                Toast.makeText(this, "Remove from favorite playlist", Toast.LENGTH_SHORT).show();
+
+            }
+            for (Song songData : MyService.mData) {
+                if (songData.getUrl().equals(song.getUrl())) {
+                    songData.isLove = false;
+                }
+            }
         }
     }
 

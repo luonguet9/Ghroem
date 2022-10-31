@@ -92,7 +92,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
-        android:progressTint="@color/spotify_blue"
+        android:progressTint="@color/ghroem_blue"
         android:thumb="@drawable/switch_thumb" />
 
 
