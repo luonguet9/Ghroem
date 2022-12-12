@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_solid_gray"
     android:orientation="vertical"
+    android:theme="@style/Theme.MyApplication"
     tools:context=".activities.MediaPlayerActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -28,9 +29,9 @@
         android:layout_height="280dp"
         android:layout_above="@id/song_info"
         android:layout_below="@id/tool_bar"
+        android:layout_centerInParent="true"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_centerInParent="true"
         android:scaleType="centerCrop"
         android:src="@drawable/spotify_blue" />
 
@@ -56,6 +57,7 @@
                 android:id="@+id/text_name_song"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/product_sans"
                 android:text="Name Song"
                 android:textColor="@color/white"
                 android:textSize="21sp"
@@ -65,6 +67,7 @@
                 android:id="@id/text_singer_song"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/product_sans"
                 android:text="Singer Song"
                 android:textColor="@color/gray"
                 android:textSize="16sp" />
@@ -110,6 +113,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:fontFamily="@font/product_sans"
             android:text="--:--"
             android:textColor="@color/white"
             android:textSize="18sp" />
@@ -120,6 +124,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="10dp"
+            android:fontFamily="@font/product_sans"
             android:text="--:--"
             android:textColor="@color/white"
             android:textSize="18sp" />

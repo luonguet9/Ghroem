@@ -58,6 +58,7 @@
                 android:id="@+id/text_name_song"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/product_sans"
                 android:text="Name"
                 android:textColor="@color/black"
                 android:textSize="16sp" />
@@ -66,6 +67,7 @@
                 android:id="@+id/text_singer_song"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/product_sans"
                 android:text="Single"
                 android:textSize="14sp" />
 
@@ -115,6 +117,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         app:itemIconTint="@color/custom_color_bottom_navigation"
+        app:itemTextAppearanceActive="@style/CustomTextFont"
+        app:itemTextAppearanceInactive="@style/CustomTextFont"
         app:itemTextColor="@color/custom_color_bottom_navigation"
         app:menu="@menu/menu_bottom_navigation" />
 

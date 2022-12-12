@@ -10,9 +10,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_blue_corner_top_left_top_right"
+        android:fontFamily="@font/product_sans"
         android:gravity="center"
         android:padding="10dp"
-        android:text="Delete playlist"
+        android:text="@string/delete_playlist"
         android:textColor="@color/white"
         android:textSize="22sp" />
 
@@ -25,11 +26,12 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="@color/black"
-            android:text="Are you sure to delete this playlist?"
-            android:padding="10dp"
             android:layout_marginBottom="20dp"
+            android:fontFamily="@font/product_sans"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/sure_to_delete_playlist"
+            android:textColor="@color/black"
             android:textSize="18sp" />
 
 
@@ -47,7 +49,8 @@
                 android:layout_weight="1"
                 android:alpha="0.4"
                 android:background="@drawable/bg_gray_corner"
-                android:text="Cancel" />
+                android:fontFamily="@font/product_sans"
+                android:text="@string/cancel" />
 
 
             <Button
@@ -56,7 +59,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/bg_blue_corner"
-                android:text="Delete" />
+                android:fontFamily="@font/product_sans"
+                android:text="@string/delete" />
 
 
         </LinearLayout>

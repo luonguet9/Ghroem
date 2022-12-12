@@ -3,13 +3,13 @@
 
     <item
         android:id="@+id/sort_title"
-        android:title="Title" />
+        android:title="@string/title" />
 
     <item
         android:id="@+id/sort_artist"
-        android:title="Artist" />
+        android:title="@string/artist" />
 
     <item
         android:id="@+id/sort_added_time"
-        android:title="Recently Added" />
+        android:title="@string/recently_added" />
 </menu>

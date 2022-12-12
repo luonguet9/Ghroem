@@ -75,7 +75,7 @@ public class AddSongsDialog extends AppCompatDialogFragment {
     private void handleAddSongToPlaylist(Song song, Playlist playlist) {
         for (Song temp : AppDatabase.getInstance(getContext()).playlistDao().getAllSongsInPlaylist(playlist.getId())) {
             if (temp.getUrl().equals(song.getUrl())) {
-                Toast.makeText(getContext(), "This song has exists!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.song_exists, Toast.LENGTH_SHORT).show();
                 return;
             }
         }
@@ -90,9 +90,9 @@ public class AddSongsDialog extends AppCompatDialogFragment {
 
     private void setNumberOfSongs() {
         if (AppDatabase.getInstance(getContext()).playlistDao().getAllSongsInPlaylist(mPlaylist.getId()).size() == 0 || AppDatabase.getInstance(getContext()).playlistDao().getAllSongsInPlaylist(mPlaylist.getId()).size() == 1) {
-            txtNumberOfSongs.setText(AppDatabase.getInstance(getContext()).playlistDao().getAllSongsInPlaylist(mPlaylist.getId()).size() + " song");
+            txtNumberOfSongs.setText(AppDatabase.getInstance(getContext()).playlistDao().getAllSongsInPlaylist(mPlaylist.getId()).size() + " " + getContext().getString(R.string.song));
         } else {
-            txtNumberOfSongs.setText(AppDatabase.getInstance(getContext()).playlistDao().getAllSongsInPlaylist(mPlaylist.getId()).size() + " songs");
+            txtNumberOfSongs.setText(AppDatabase.getInstance(getContext()).playlistDao().getAllSongsInPlaylist(mPlaylist.getId()).size() + " " + getContext().getString(R.string.songs));
         }
     }
 

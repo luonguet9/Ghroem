@@ -74,7 +74,7 @@ public class AddToPlaylistDialog extends AppCompatDialogFragment {
     private void handleAddSongToPlaylist(Song song, Playlist playlist) {
         for (Song temp : AppDatabase.getInstance(getContext()).playlistDao().getAllSongsInPlaylist(playlist.getId())) {
             if (temp.getUrl().equals(song.getUrl())) {
-                Toast.makeText(getContext(), "This song has exists!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.song_exists, Toast.LENGTH_SHORT).show();
                 return;
             }
         }
@@ -114,10 +114,10 @@ public class AddToPlaylistDialog extends AppCompatDialogFragment {
         btCreate.setOnClickListener(view1 -> {
             String name = edtNamePlaylist.getText().toString();
             if (name.isEmpty()) {
-                edtNamePlaylist.setError("Give your playlist a name!");
+                edtNamePlaylist.setError(getString(R.string.please_give_your_playlist_a_name));
             } else {
                 if (AppDatabase.getInstance(getContext()).playlistDao().getPlaylistByName(name) != null) {
-                    Toast.makeText(getContext(), "This playlist has exist!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.playlist_exist, Toast.LENGTH_SHORT).show();
                 } else {
                     Playlist playlist = new Playlist(name);
                     AppDatabase.getInstance(getContext()).playlistDao().insertPlaylist(playlist);

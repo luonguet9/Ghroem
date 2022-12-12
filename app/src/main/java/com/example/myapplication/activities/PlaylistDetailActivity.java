@@ -69,6 +69,9 @@ public class PlaylistDetailActivity extends AppCompatActivity {
         });
 
         txtPlaylistName.setText(mPlaylist.getName());
+        if (mPlaylist.getId() == 1) {
+            txtPlaylistName.setText(getString(R.string.favorite));
+        }
 
         handleImagePlaylist();
 
@@ -201,9 +204,9 @@ public class PlaylistDetailActivity extends AppCompatActivity {
 
     private void setNumberOfSongs() {
         if (AppDatabase.getInstance(this).playlistDao().getAllSongsInPlaylist(mPlaylist.getId()).size() == 0 || AppDatabase.getInstance(this).playlistDao().getAllSongsInPlaylist(mPlaylist.getId()).size() == 1) {
-            txtNumberOfSongs.setText(AppDatabase.getInstance(this).playlistDao().getAllSongsInPlaylist(mPlaylist.getId()).size() + " song");
+            txtNumberOfSongs.setText(AppDatabase.getInstance(this).playlistDao().getAllSongsInPlaylist(mPlaylist.getId()).size() + " " + getString(R.string.song));
         } else {
-            txtNumberOfSongs.setText(AppDatabase.getInstance(this).playlistDao().getAllSongsInPlaylist(mPlaylist.getId()).size() + " songs");
+            txtNumberOfSongs.setText(AppDatabase.getInstance(this).playlistDao().getAllSongsInPlaylist(mPlaylist.getId()).size() + " " + getString(R.string.songs));
         }
     }
 
@@ -252,7 +255,7 @@ public class PlaylistDetailActivity extends AppCompatActivity {
         }
         for(Song temp : mData) {
             if (temp.getUrl().equals(newSong.getUrl())) {
-                Toast.makeText(this, "This song has exists!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.song_exists, Toast.LENGTH_SHORT).show();
                 return;
             }
         }
@@ -265,10 +268,10 @@ public class PlaylistDetailActivity extends AppCompatActivity {
     private void deleteSongFromPlaylist(Song song) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        builder.setTitle("Delete this song")
-                .setMessage("Are you sure to delete?")
-                .setNegativeButton("No", null)
-                .setPositiveButton("Yes", (dialogInterface, i) -> {
+        builder.setTitle(R.string.delete_song)
+                .setMessage(R.string.sure_to_delete)
+                .setNegativeButton(R.string.no, null)
+                .setPositiveButton(R.string.yes, (dialogInterface, i) -> {
                     for (Song temp : AppDatabase.getInstance(this).playlistDao().getAllSongsInPlaylist(mPlaylist.getId())) {
                         if (temp.getUrl().equals(song.getUrl())) {
                             viewModel.deleteSong(temp);

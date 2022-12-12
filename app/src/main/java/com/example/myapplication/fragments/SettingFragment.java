@@ -1,5 +1,11 @@
 package com.example.myapplication.fragments;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,8 +13,18 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.RelativeLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.example.myapplication.R;
+import com.example.myapplication.activities.MainActivity;
+import com.example.myapplication.utilities.LocaleHelper;
+
+import java.util.Locale;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,6 +41,10 @@ public class SettingFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    Spinner spinner;
+    RelativeLayout layoutLanguage;
+    int langSelect = -1;
 
     public SettingFragment() {
         // Required empty public constructor
@@ -61,6 +81,88 @@ public class SettingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_setting, container, false);
+        View view = inflater.inflate(R.layout.fragment_setting, container, false);
+
+        layoutLanguage = view.findViewById(R.id.layout_language);
+        //spinner = view.findViewById(R.id.spinner);
+
+        //showSpinnerSelect();
+        layoutLanguage.setOnClickListener(view1 -> {
+            showChangeLanguageDialog();
+        });
+
+        return view;
     }
+
+    private void showChangeLanguageDialog() {
+        final String[] listLanguage = {"English", "Tiếng Việt"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(getString(R.string.choose_language))
+                .setSingleChoiceItems(listLanguage, langSelect, (dialogInterface, i) -> {
+
+                    if (listLanguage[i].equals("English")) {
+                        langSelect = 0;
+                        setLocale(requireActivity(), "en");
+                        ((MainActivity) requireActivity()).finish();
+                        startActivity(requireActivity().getIntent());
+
+                    }
+
+                    if (listLanguage[i].equals("Tiếng Việt")) {
+                        langSelect = 1;
+                        setLocale(requireActivity(), "vi");
+                        ((MainActivity) requireActivity()).finish();
+                        startActivity(requireActivity().getIntent());
+
+                    }
+
+                })
+                .setPositiveButton("Ok", (dialogInterface, i) -> {
+                    dialogInterface.dismiss();
+                })
+                .create()
+                .show();
+
+    }
+
+//    private void showSpinnerSelect() {
+//        final String[] listLanguage = {"Select Language", "English", "Tiếng Việt"};
+//        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, listLanguage);
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        spinner.setAdapter(adapter);
+//        spinner.setSelection(0);
+//        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+//                String currentLang = adapterView.getItemAtPosition(i).toString();
+//                if (currentLang.equals("English")) {
+//                    setLocale(requireActivity(), "en");
+//                    ((MainActivity) requireActivity()).finish();
+//                    startActivity(requireActivity().getIntent());
+//                } else if (currentLang.equals("Tiếng Việt")) {
+//                    setLocale(requireActivity(), "vi");
+//                    ((MainActivity) requireActivity()).finish();
+//                    startActivity(requireActivity().getIntent());
+//                }
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> adapterView) {
+//
+//            }
+//        });
+//    }
+
+    private void setLocale(Activity activity, String lang) {
+        Locale locale = new Locale(lang);
+        Locale.setDefault(locale);
+        Resources resources = activity.getResources();
+        Configuration configuration = resources.getConfiguration();
+        configuration.setLocale(locale);
+        resources.updateConfiguration(configuration, resources.getDisplayMetrics());
+
+    }
+
+
 }

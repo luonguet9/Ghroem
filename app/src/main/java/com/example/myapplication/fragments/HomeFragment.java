@@ -1,11 +1,8 @@
 package com.example.myapplication.fragments;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -19,13 +16,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.view.inputmethod.EditorInfo;
@@ -43,7 +37,6 @@ import com.example.myapplication.activities.SplashActivity;
 import com.example.myapplication.adapters.SongAdapter;
 import com.example.myapplication.database.AppDatabase;
 import com.example.myapplication.dialogs.AddToPlaylistDialog;
-import com.example.myapplication.models.Playlist;
 import com.example.myapplication.models.Song;
 import com.example.myapplication.services.MyService;
 
@@ -158,26 +151,23 @@ public class HomeFragment extends Fragment {
                 }
 
                 menuItemDelete.setVisible(false);
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem menuItem) {
-                        switch (menuItem.getItemId()) {
-                            case R.id.action_love:
-                                handleActionLove(song);
-                                return true;
+                popupMenu.setOnMenuItemClickListener(menuItem -> {
+                    switch (menuItem.getItemId()) {
+                        case R.id.action_love:
+                            handleActionLove(song);
+                            return true;
 
-                            case R.id.action_un_love:
-                                handleActionUnLove(song);
-                                return true;
+                        case R.id.action_un_love:
+                            handleActionUnLove(song);
+                            return true;
 
-                            case R.id.action_add_to_playlist:
-                                AddToPlaylistDialog addToPlaylistDialog = new AddToPlaylistDialog(song);
-                                addToPlaylistDialog.show(getActivity().getSupportFragmentManager(), "");
-                                return true;
+                        case R.id.action_add_to_playlist:
+                            AddToPlaylistDialog addToPlaylistDialog = new AddToPlaylistDialog(song);
+                            addToPlaylistDialog.show(getActivity().getSupportFragmentManager(), "");
+                            return true;
 
-                            default:
-                                return false;
-                        }
+                        default:
+                            return false;
                     }
                 });
                 popupMenu.show();
@@ -337,15 +327,15 @@ public class HomeFragment extends Fragment {
         String date = dateFormat.format(Calendar.getInstance().getTime());
         int hour = Integer.parseInt(date);
         if (5 <= hour && hour < 12) {
-            txtHello.setText("Good morning");
+            txtHello.setText(R.string.good_morning);
         } else {
             if (hour >= 12 && hour < 19) {
-                txtHello.setText("Good afternoon");
+                txtHello.setText(R.string.good_afternoon);
             } else {
                 if (hour >= 19 && hour < 22) {
-                    txtHello.setText("Good evening");
+                    txtHello.setText(R.string.good_evening);
                 } else {
-                    txtHello.setText("Good night");
+                    txtHello.setText(R.string.good_night);
                 }
             }
         }
@@ -369,15 +359,12 @@ public class HomeFragment extends Fragment {
     private void removeSong(int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
-        builder.setTitle("Delete this song")
-                .setMessage("Are you sure to delete?")
-                .setNegativeButton("No", null)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        mSongAdapter.removeSong(position);
-                        Toast.makeText(getContext(), "Delete successfully!", Toast.LENGTH_SHORT).show();
-                    }
+        builder.setTitle(R.string.delete_song)
+                .setMessage(R.string.sure_to_delete)
+                .setNegativeButton(R.string.no, null)
+                .setPositiveButton(R.string.yes, (dialogInterface, i) -> {
+                    mSongAdapter.removeSong(position);
+                    Toast.makeText(getContext(), "Delete successfully!", Toast.LENGTH_SHORT).show();
                 })
                 .show();
     }
@@ -401,7 +388,7 @@ public class HomeFragment extends Fragment {
     private void handleActionLove(Song song) {
         for (Song temp : AppDatabase.getInstance(getContext()).playlistDao().getAllSongsInPlaylist(1)) {
             if (temp.getUrl().equals(song.getUrl())) {
-                Toast.makeText(getContext(), "This song has exists!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.song_exists, Toast.LENGTH_SHORT).show();
                 return;
             }
         }
@@ -410,7 +397,7 @@ public class HomeFragment extends Fragment {
         newSong.isLove = true;
         newSong.playlistId = 1;
         PlaylistDetailActivity.viewModel.insertSong(newSong);
-        Toast.makeText(getContext(), "Added to favorite playlist", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), R.string.added_song_to_favorite_playlist, Toast.LENGTH_SHORT).show();
     }
 
     private void handleActionUnLove(Song song) {
@@ -418,7 +405,7 @@ public class HomeFragment extends Fragment {
         for (Song temp : AppDatabase.getInstance(getContext()).playlistDao().getAllSongsInPlaylist(1)) {
             if (temp.getUrl().equals(song.getUrl())) {
                 PlaylistDetailActivity.viewModel.deleteSong(temp);
-                Toast.makeText(getContext(), "Remove from favorite playlist", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.remove_song_to_favorite_playlist, Toast.LENGTH_SHORT).show();
             }
 
             if (MyService.mSong != null && MyService.mSong.getUrl().equals(song.getUrl())) {

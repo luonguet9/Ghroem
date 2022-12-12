@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.view.MotionEvent;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -388,7 +387,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
     private void addSongToFavoritePlaylist(Song song){
         for (Song temp : AppDatabase.getInstance(this).playlistDao().getAllSongsInPlaylist(1)) {
             if (temp.getUrl().equals(song.getUrl())) {
-                Toast.makeText(this, "This song has exists!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.song_exists, Toast.LENGTH_SHORT).show();
                 return;
             }
         }
@@ -397,7 +396,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
         newSong.isLove = true;
         newSong.playlistId = 1;
         PlaylistDetailActivity.viewModel.insertSong(newSong);
-        Toast.makeText(this, "Added to favorite playlist", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.added_song_to_favorite_playlist, Toast.LENGTH_SHORT).show();
     }
 
     private void deleteSongFromFavoritePlaylist(Song song) {
@@ -405,7 +404,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
         for (Song temp : AppDatabase.getInstance(this).playlistDao().getAllSongsInPlaylist(1)) {
             if (temp.getUrl().equals(song.getUrl())) {
                 PlaylistDetailActivity.viewModel.deleteSong(temp);
-                Toast.makeText(this, "Remove from favorite playlist", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.remove_song_to_favorite_playlist, Toast.LENGTH_SHORT).show();
 
             }
             for (Song songData : MyService.mData) {

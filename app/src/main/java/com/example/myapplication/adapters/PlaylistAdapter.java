@@ -1,5 +1,6 @@
 package com.example.myapplication.adapters;
 
+import android.content.res.Resources;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -76,12 +77,15 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.MyView
 
 
         holder.txtNamePlaylist.setText(playlist.getName());
+        if (playlist.getId() == 1) {
+            holder.txtNamePlaylist.setText(holder.itemView.getContext().getString(R.string.favorite));
+        }
 
 
         if (songList.size() == 0 || songList.size() == 1) {
-            holder.txtNumbersOfSongs.setText(songList.size() + " song");
+            holder.txtNumbersOfSongs.setText(songList.size() + " " + holder.itemView.getContext().getString(R.string.song));
         } else {
-            holder.txtNumbersOfSongs.setText(songList.size() + " songs");
+            holder.txtNumbersOfSongs.setText(songList.size() + " " + holder.itemView.getContext().getString(R.string.songs));
         }
 
         holder.imgMore.setOnClickListener(view -> {

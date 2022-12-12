@@ -8,8 +8,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginEnd="10dp"
         android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/bg_red_corner">
 
@@ -65,6 +65,7 @@
                 android:id="@+id/text_name_song"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/product_sans"
                 android:text="Name song"
                 android:textColor="@color/black"
                 android:textSize="16sp" />
@@ -73,6 +74,7 @@
                 android:id="@+id/text_singer_song"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/product_sans"
                 android:text="Singer song"
                 android:textColor="@color/gray"
                 android:textSize="12sp" />

@@ -10,9 +10,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_blue_corner_top_left_top_right"
+        android:fontFamily="@font/product_sans"
         android:gravity="center"
         android:padding="10dp"
-        android:text="Rename playlist"
+        android:text="@string/rename_playlist"
         android:textColor="@color/white"
         android:textSize="22sp" />
 
@@ -25,9 +26,10 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/product_sans"
             android:gravity="center"
             android:paddingTop="5dp"
-            android:text="Give your playlist a new name"
+            android:text="@string/give_your_playlist_a_name"
             android:textColor="@color/black"
             android:textSize="16sp" />
 
@@ -35,10 +37,11 @@
             android:id="@+id/edt_name_playlist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:background="@drawable/bg_gray_corner"
-            android:hint="Type your playlist's name"
+            android:fontFamily="@font/product_sans"
+            android:hint="@string/type_your_playlist_name"
             android:padding="10dp" />
 
         <LinearLayout
@@ -55,7 +58,8 @@
                 android:layout_weight="1"
                 android:alpha="0.4"
                 android:background="@drawable/bg_gray_corner"
-                android:text="Cancel" />
+                android:fontFamily="@font/product_sans"
+                android:text="@string/cancel" />
 
 
             <Button
@@ -64,7 +68,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/bg_blue_corner"
-                android:text="Save" />
+                android:fontFamily="@font/product_sans"
+                android:text="@string/save" />
 
 
         </LinearLayout>

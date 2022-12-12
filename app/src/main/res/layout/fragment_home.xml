@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
+    android:theme="@style/Theme.MyApplication"
     tools:context=".fragments.HomeFragment">
 
     <LinearLayout
@@ -20,21 +21,22 @@
                 android:id="@+id/txt_hello"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Good mornings"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="@color/ghroem_blue"
                 android:layout_marginStart="15dp"
-                android:padding="5dp"/>
+                android:fontFamily="@font/product_sans"
+                android:padding="5dp"
+                android:text="@string/good_morning"
+                android:textColor="@color/ghroem_blue"
+                android:textSize="24sp"
+                android:textStyle="bold" />
 
             <ImageView
                 android:id="@+id/image_sort"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:src="@drawable/ic_baseline_sort_24"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="20dp"/>
+                android:layout_marginEnd="20dp"
+                android:src="@drawable/ic_baseline_sort_24" />
 
         </RelativeLayout>
 
@@ -42,8 +44,8 @@
             android:id="@+id/layout_search"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:layout_marginTop="-5dp">
+            android:layout_marginTop="-5dp"
+            android:padding="10dp">
 
             <EditText
                 android:id="@+id/edt_search"
@@ -52,7 +54,8 @@
                 android:background="@drawable/bg_search"
                 android:drawableStart="@drawable/ic_baseline_search_24"
                 android:drawablePadding="10dp"
-                android:hint="Finds in Songs"
+                android:fontFamily="@font/product_sans"
+                android:hint="@string/search"
                 android:imeOptions="actionSearch"
                 android:inputType="text"
                 android:padding="10dp" />
@@ -62,8 +65,8 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:layout_marginTop="-10dp">
+            android:layout_marginTop="-10dp"
+            android:padding="10dp">
 
 
             <LinearLayout
@@ -80,7 +83,8 @@
                     android:layout_height="match_parent"
                     android:layout_marginEnd="30dp"
                     android:layout_weight="1"
-                    android:text="Play"
+                    android:fontFamily="@font/product_sans"
+                    android:text="@string/play"
                     app:cornerRadius="30dp" />
 
                 <Button
@@ -88,7 +92,8 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:text="Shuffle"
+                    android:fontFamily="@font/product_sans"
+                    android:text="@string/shuffle"
                     app:cornerRadius="30dp" />
 
             </LinearLayout>

@@ -33,6 +33,7 @@ import com.example.myapplication.models.Song;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -165,7 +166,7 @@ public class LibraryFragment extends Fragment {
 
     private void initFavoritePlaylist() {
         if (mData.size() == 0) {
-            Playlist playlist = new Playlist("Favorite");
+            Playlist playlist = new Playlist(getString(R.string.favorite));
             AppDatabase.getInstance(getContext()).playlistDao().insertPlaylist(playlist);
             loadData();
         }
@@ -199,10 +200,10 @@ public class LibraryFragment extends Fragment {
         btCreate.setOnClickListener(view1 -> {
             String name = edtNamePlaylist.getText().toString();
             if (name.isEmpty()) {
-                edtNamePlaylist.setError("Give your playlist a name!");
+                edtNamePlaylist.setError(getString(R.string.please_give_your_playlist_a_name));
             } else {
                 if (AppDatabase.getInstance(getContext()).playlistDao().getPlaylistByName(name) != null) {
-                    Toast.makeText(getContext(), "This playlist has exist!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.playlist_exist, Toast.LENGTH_SHORT).show();
                 } else {
                     Playlist playlist = new Playlist(name);
                     AppDatabase.getInstance(getContext()).playlistDao().insertPlaylist(playlist);
@@ -245,7 +246,7 @@ public class LibraryFragment extends Fragment {
     private void renamePlaylist(Playlist playlist) {
 
         if (playlist == mData.get(0)) {
-            Toast.makeText(getContext(), "Can't rename Favorite Playlist", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.cant_rename_favorite_playlist, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -277,11 +278,11 @@ public class LibraryFragment extends Fragment {
             String name = edtNamePlaylist.getText().toString().trim();
             if (name.isEmpty()) {
                 edtNamePlaylist.requestFocus();
-                edtNamePlaylist.setError("Give your playlist a name!");
-                Toast.makeText(getContext(), "Please give your playlist a name!", Toast.LENGTH_SHORT).show();
+                edtNamePlaylist.setError(String.valueOf(R.string.give_your_playlist_a_name));
+                Toast.makeText(getContext(), R.string.please_give_your_playlist_a_name, Toast.LENGTH_SHORT).show();
             } else {
                 if (AppDatabase.getInstance(getContext()).playlistDao().getPlaylistByName(name) != null) {
-                    Toast.makeText(getContext(), "This playlist has exist!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.playlist_exist, Toast.LENGTH_SHORT).show();
                 } else {
                     playlist.setName(name);
                     AppDatabase.getInstance(getContext()).playlistDao().updatePlaylist(playlist);
@@ -329,7 +330,7 @@ public class LibraryFragment extends Fragment {
 
     private void deletePlaylist(Playlist playlist) {
         if (playlist == mData.get(0)) {
-            Toast.makeText(getContext(), "Can't delete Favorite Playlist", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.cant_delete_favorite_playlist, Toast.LENGTH_SHORT).show();
             return;
         }
 

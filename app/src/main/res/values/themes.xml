@@ -12,5 +12,14 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <item name="itemTextAppearance">@style/CustomTextFont</item>
+        <item name="itemTextAppearanceActive">@style/CustomTextFont</item>
+        <item name="itemTextAppearanceInactive">@style/CustomTextFont</item>
     </style>
+
+    <style name="CustomTextFont"
+        parent="Widget.Design.BottomNavigationView">
+        <item name="fontFamily">@font/product_sans</item>
+    </style>
+
 </resources>

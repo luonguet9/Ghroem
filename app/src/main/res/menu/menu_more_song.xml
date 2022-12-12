@@ -2,18 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_love"
-        android:title="Love"/>
+        android:title="@string/love"/>
 
     <item
         android:id="@+id/action_un_love"
-        android:title="Unlove"/>
+        android:title="@string/unlove"/>
 
     <item
         android:id="@+id/action_add_to_playlist"
-        android:title="Add to playlist"/>
+        android:title="@string/add_to_playlist"/>
 
     <item
         android:id="@+id/action_delete_from_playlist"
-        android:title="Delete from playlist"/>
+        android:title="@string/delete_from_playlist"/>
 
 </menu>

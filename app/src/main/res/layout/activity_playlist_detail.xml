@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:layout_marginStart="20dp"
     android:layout_marginEnd="20dp"
+    android:theme="@style/Theme.MyApplication"
     tools:context=".activities.PlaylistDetailActivity">
 
     <LinearLayout
@@ -28,6 +29,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="8"
+            android:fontFamily="@font/product_sans"
             android:gravity="center"
             android:text="Playlist name"
             android:textColor="@color/black"
@@ -70,6 +72,7 @@
             android:layout_centerVertical="true"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="10dp"
+            android:fontFamily="@font/product_sans"
             android:text="0 song"
             android:textSize="18sp" />
 
@@ -80,13 +83,14 @@
             android:layout_centerInParent="true"
             android:layout_gravity="center_horizontal"
             android:background="@drawable/bg_button"
+            android:fontFamily="@font/product_sans"
             android:padding="10dp"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
-            android:textStyle="bold"
-            android:text="Add songs"
+            android:text="@string/add_song"
             android:textColor="@color/ghroem_blue"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/txt_sort"
@@ -97,8 +101,9 @@
             android:layout_gravity="center_vertical"
             android:layout_marginEnd="5dp"
             android:background="@drawable/bg_button"
+            android:fontFamily="@font/product_sans"
             android:padding="10dp"
-            android:text="Sort"
+            android:text="@string/sort"
             android:textColor="@color/ghroem_blue"
             android:textSize="20sp" />
 

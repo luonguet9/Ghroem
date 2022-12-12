@@ -74,9 +74,16 @@ public class SplashActivity extends AppCompatActivity {
 
             String sortOrder = MediaStore.Audio.Media.TITLE + " ASC";
 
+            Uri collection;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                collection = MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL);
+            } else {
+                collection = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+            }
+
             Thread loadingThread = new Thread(() -> {
                 Cursor cursor = getApplicationContext()
-                        .getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                        .getContentResolver().query(collection,
                                 projection, null, null, sortOrder);
                 while (cursor.moveToNext()) {
                     int songId = cursor.getInt(0);
@@ -87,7 +94,7 @@ public class SplashActivity extends AppCompatActivity {
                     String addedDate = cursor.getString(5);
                     long albumId = cursor.getLong(6);
 
-                    Uri albumartUri = ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"),albumId);
+                    Uri albumartUri = ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), albumId);
                     Song song = new Song(songId, songName, songAlbum, R.drawable.spotify_blue, songSinger, songURL, addedDate, albumartUri);
                     mSongList.add(song);
                 }
