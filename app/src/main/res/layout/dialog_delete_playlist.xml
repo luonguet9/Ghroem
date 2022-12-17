@@ -31,7 +31,7 @@
             android:gravity="center"
             android:padding="10dp"
             android:text="@string/sure_to_delete_playlist"
-            android:textColor="@color/black"
+            android:textColor="?colorOnSecondary"
             android:textSize="18sp" />
 
 
@@ -50,7 +50,8 @@
                 android:alpha="0.4"
                 android:background="@drawable/bg_gray_corner"
                 android:fontFamily="@font/product_sans"
-                android:text="@string/cancel" />
+                android:text="@string/cancel"
+                android:textColor="@color/white" />
 
 
             <Button
@@ -60,7 +61,8 @@
                 android:layout_weight="1"
                 android:background="@drawable/bg_blue_corner"
                 android:fontFamily="@font/product_sans"
-                android:text="@string/delete" />
+                android:text="@string/delete"
+                android:textColor="@color/white" />
 
 
         </LinearLayout>

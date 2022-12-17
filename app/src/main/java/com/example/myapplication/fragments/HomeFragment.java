@@ -3,12 +3,14 @@ package com.example.myapplication.fragments;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,6 +28,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +42,9 @@ import com.example.myapplication.database.AppDatabase;
 import com.example.myapplication.dialogs.AddToPlaylistDialog;
 import com.example.myapplication.models.Song;
 import com.example.myapplication.services.MyService;
+import com.example.myapplication.utilities.itemtouch.ItemTouchHelperListener;
+import com.example.myapplication.utilities.itemtouch.RecyclerViewItemTouchHelper;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -74,6 +80,9 @@ public class HomeFragment extends Fragment {
     ImageView imgSort;
     EditText edtSearch;
     Button btPlay, btShuffle;
+
+    LinearLayout layoutRoot;
+    NestedScrollView mNestedScrollView;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -175,9 +184,9 @@ public class HomeFragment extends Fragment {
         });
 
         mRecyclerView.setAdapter(mSongAdapter);
-        ViewCompat.setNestedScrollingEnabled(mRecyclerView, false);
+        //ViewCompat.setNestedScrollingEnabled(mRecyclerView, false);
 
-        handleSwipeItem();
+        handleSwipeItemSong();
 
         handleTextTitle();
 
@@ -261,59 +270,93 @@ public class HomeFragment extends Fragment {
         edtSearch = view.findViewById(R.id.edt_search);
         btPlay = view.findViewById(R.id.button_play);
         btShuffle = view.findViewById(R.id.button_shuffle);
+        layoutRoot = view.findViewById(R.id.layout_root);
+        mNestedScrollView = view.findViewById(R.id.layout_fragment);
     }
 
-    private void handleSwipeItem() {
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                return true;
+//    private void handleSwipeItem() {
+//        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+//            @Override
+//            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+//                return true;
+//            }
+//
+//            @Override
+//            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+//                if (viewHolder instanceof SongAdapter.MyViewHolder) {
+//                    int position = viewHolder.getAdapterPosition();
+//                    Song song = mListSong.get(position);
+//                    String nameSong = song.getName();
+//                    mSongAdapter.removeSong(position);
+//                    //removeSong(position);
+//                    //handleActionLove(song);
+//
+//                    Snackbar snackbar = Snackbar.make(layoutRoot, nameSong + " removed", Snackbar.LENGTH_LONG);
+//                    snackbar.setAction("Undo", view -> mSongAdapter.undoRemove(song, position));
+//                    snackbar.setActionTextColor(Color.BLUE);
+//                    snackbar.show();
+//                }
+//            }
+//
+//            @Override
+//            public void onSelectedChanged(@Nullable RecyclerView.ViewHolder viewHolder, int actionState) {
+//                if (viewHolder != null) {
+//                    View foreGroundView = ((SongAdapter.MyViewHolder) viewHolder).layoutForeground;
+//                    getDefaultUIUtil().onSelected(foreGroundView);
+//                }
+//            }
+//
+//            @Override
+//            public void onChildDrawOver(@NonNull Canvas c, @NonNull RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+//                assert viewHolder != null;
+//                View foreGroundView = ((SongAdapter.MyViewHolder) viewHolder).layoutForeground;
+//                getDefaultUIUtil().onDrawOver(c, recyclerView, foreGroundView, dX, dY, actionState, isCurrentlyActive);
+//            }
+//
+//            @Override
+//            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder,
+//                                    float dX, float dY, int actionState, boolean isCurrentlyActive) {
+//
+//                View foreGroundView = ((SongAdapter.MyViewHolder) viewHolder).layoutForeground;
+//                getDefaultUIUtil().onDraw(c, recyclerView, foreGroundView, dX, dY, actionState, isCurrentlyActive);
+//
+//
+//            }
+//
+//            @Override
+//            public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+//
+//                View foreGroundView = ((SongAdapter.MyViewHolder) viewHolder).layoutForeground;
+//                getDefaultUIUtil().clearView(foreGroundView);
+//            }
+//        }).attachToRecyclerView(mRecyclerView);
+//    }
+
+    private void handleSwipeItemSong() {
+        ItemTouchHelper.SimpleCallback simpleCallback = new RecyclerViewItemTouchHelper(0, ItemTouchHelper.LEFT, viewHolder -> {
+            if (viewHolder instanceof SongAdapter.MyViewHolder) {
+                int position = viewHolder.getAdapterPosition();
+                Song song = mListSong.get(position);
+                String nameSong = song.getName();
+                mSongAdapter.removeSong(position);
+                //removeSong(position);
+                //handleActionLove(song);
+
+                Snackbar snackbar = Snackbar.make(layoutRoot, getString(R.string.removed) + " " + nameSong, Snackbar.LENGTH_LONG);
+                snackbar.setAction(getString(R.string.undo), view -> {
+                    mSongAdapter.undoRemove(song, position);
+                    if (position == mListSong.size() - 1) {
+                        mRecyclerView.scrollToPosition(position);
+                    }
+                });
+                snackbar.setActionTextColor(Color.YELLOW);
+                snackbar.show();
             }
+        });
 
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                if (viewHolder instanceof SongAdapter.MyViewHolder) {
-                    int position = viewHolder.getAdapterPosition();
-                    Song song = mListSong.get(position);
-                    //mSongAdapter.removeSong(position);
-                    removeSong(position);
-                    //handleActionLove(song);
-                }
-            }
-
-            @Override
-            public void onSelectedChanged(@Nullable RecyclerView.ViewHolder viewHolder, int actionState) {
-                if (viewHolder != null) {
-                    View foreGroundView = ((SongAdapter.MyViewHolder) viewHolder).layoutForeground;
-                    getDefaultUIUtil().onSelected(foreGroundView);
-                }
-            }
-
-            @Override
-            public void onChildDrawOver(@NonNull Canvas c, @NonNull RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-                assert viewHolder != null;
-                View foreGroundView = ((SongAdapter.MyViewHolder) viewHolder).layoutForeground;
-                getDefaultUIUtil().onDrawOver(c, recyclerView, foreGroundView, dX, dY, actionState, isCurrentlyActive);
-            }
-
-            @Override
-            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder,
-                                    float dX, float dY, int actionState, boolean isCurrentlyActive) {
-
-                View foreGroundView = ((SongAdapter.MyViewHolder) viewHolder).layoutForeground;
-                getDefaultUIUtil().onDraw(c, recyclerView, foreGroundView, dX, dY, actionState, isCurrentlyActive);
-
-
-            }
-
-            @Override
-            public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-
-                View foreGroundView = ((SongAdapter.MyViewHolder) viewHolder).layoutForeground;
-                getDefaultUIUtil().clearView(foreGroundView);
-            }
-        }).attachToRecyclerView(mRecyclerView);
+        new ItemTouchHelper(simpleCallback).attachToRecyclerView(mRecyclerView);
     }
+
 
     private void loadDataWithAnimation() {
         LayoutAnimationController layoutAnimationController = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_animation_up_to_down);

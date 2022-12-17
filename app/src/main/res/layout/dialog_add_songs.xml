@@ -12,7 +12,7 @@
         android:fontFamily="@font/product_sans"
         android:padding="5dp"
         android:text="@string/your_list_song"
-        android:textColor="@color/black"
+        android:textColor="?colorOnSecondary"
         android:textSize="20sp" />
 
     <androidx.recyclerview.widget.RecyclerView

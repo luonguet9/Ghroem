@@ -31,6 +31,9 @@ public class SplashActivity extends AppCompatActivity {
     ActivityResultLauncher<String> storagePermissionLauncher;
     public static List<Song> mSongList;
 
+    public static int langSelect = 0;
+    public static int themeSelect = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

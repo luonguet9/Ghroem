@@ -3,6 +3,7 @@ package com.example.myapplication.services;
 import static com.example.myapplication.applications.MusicApplication.CHANNEL_ID;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -103,6 +104,10 @@ public class MyService extends Service {
             mMediaPlayer.release();
             mMediaPlayer = null;
         }
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(1);
+
         super.onDestroy();
     }
 

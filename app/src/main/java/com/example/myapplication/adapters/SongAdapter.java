@@ -106,4 +106,10 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.MyViewHolder> 
         mData.remove(position);
         notifyItemRemoved(position);
     }
+
+    public void undoRemove(Song song, int position) {
+        mData.add(position, song);
+        notifyItemInserted(position);
+    }
+
 }

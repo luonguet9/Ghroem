@@ -54,4 +54,11 @@
     <string name="sort">Sắp xếp</string>
     <string name="language">Ngôn ngữ</string>
     <string name="choose_language">Chọn ngôn ngữ:</string>
+    <string name="removed">Đã xóa</string>
+    <string name="undo">HOÀN TÁC</string>
+    <string name="theme">Giao diện</string>
+    <string name="choose_theme">Chọn giao diện:</string>
+    <string name="light">Sáng</string>
+    <string name="dark">Tối</string>
+
 </resources>

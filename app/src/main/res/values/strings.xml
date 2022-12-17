@@ -54,5 +54,11 @@
     <string name="sort">Sort</string>
     <string name="language">Language</string>
     <string name="choose_language">Choose language:</string>
+    <string name="removed">Removed</string>
+    <string name="undo">UNDO</string>
+    <string name="theme">Theme</string>
+    <string name="choose_theme">Choose theme:</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
 
 </resources>

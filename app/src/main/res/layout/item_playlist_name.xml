@@ -20,7 +20,7 @@
         android:layout_marginStart="10dp"
         android:fontFamily="@font/product_sans"
         android:text="Playlist name"
-        android:textColor="@color/black"
+        android:textColor="?colorOnSecondary"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/image_playlist"

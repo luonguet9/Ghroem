@@ -2,13 +2,15 @@
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="?colorOnPrimary"
     android:theme="@style/Theme.MyApplication"
     tools:context=".fragments.HomeFragment">
 
     <LinearLayout
+        android:id="@+id/layout_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -52,6 +54,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_search"
+                android:backgroundTint="?colorOnBackground"
                 android:drawableStart="@drawable/ic_baseline_search_24"
                 android:drawablePadding="10dp"
                 android:fontFamily="@font/product_sans"
@@ -85,6 +88,7 @@
                     android:layout_weight="1"
                     android:fontFamily="@font/product_sans"
                     android:text="@string/play"
+                    android:textColor="@color/white"
                     app:cornerRadius="30dp" />
 
                 <Button
@@ -94,6 +98,7 @@
                     android:layout_weight="1"
                     android:fontFamily="@font/product_sans"
                     android:text="@string/shuffle"
+                    android:textColor="@color/white"
                     app:cornerRadius="30dp" />
 
             </LinearLayout>

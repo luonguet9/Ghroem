@@ -2,29 +2,26 @@ package com.example.myapplication.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.example.myapplication.R;
 import com.example.myapplication.activities.MainActivity;
-import com.example.myapplication.utilities.LocaleHelper;
+import com.example.myapplication.activities.SplashActivity;
 
 import java.util.Locale;
-import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -44,7 +41,7 @@ public class SettingFragment extends Fragment {
 
     Spinner spinner;
     RelativeLayout layoutLanguage;
-    int langSelect = -1;
+    RelativeLayout layoutTheme;
 
     public SettingFragment() {
         // Required empty public constructor
@@ -84,11 +81,16 @@ public class SettingFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_setting, container, false);
 
         layoutLanguage = view.findViewById(R.id.layout_language);
+        layoutTheme = view.findViewById(R.id.layout_theme);
         //spinner = view.findViewById(R.id.spinner);
 
         //showSpinnerSelect();
         layoutLanguage.setOnClickListener(view1 -> {
             showChangeLanguageDialog();
+        });
+
+        layoutTheme.setOnClickListener(view1 -> {
+            handleChangeTheme();
         });
 
         return view;
@@ -99,10 +101,10 @@ public class SettingFragment extends Fragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle(getString(R.string.choose_language))
-                .setSingleChoiceItems(listLanguage, langSelect, (dialogInterface, i) -> {
+                .setSingleChoiceItems(listLanguage, SplashActivity.langSelect, (dialogInterface, i) -> {
 
                     if (listLanguage[i].equals("English")) {
-                        langSelect = 0;
+                        SplashActivity.langSelect = 0;
                         setLocale(requireActivity(), "en");
                         ((MainActivity) requireActivity()).finish();
                         startActivity(requireActivity().getIntent());
@@ -110,7 +112,7 @@ public class SettingFragment extends Fragment {
                     }
 
                     if (listLanguage[i].equals("Tiếng Việt")) {
-                        langSelect = 1;
+                        SplashActivity.langSelect = 1;
                         setLocale(requireActivity(), "vi");
                         ((MainActivity) requireActivity()).finish();
                         startActivity(requireActivity().getIntent());
@@ -161,6 +163,32 @@ public class SettingFragment extends Fragment {
         Configuration configuration = resources.getConfiguration();
         configuration.setLocale(locale);
         resources.updateConfiguration(configuration, resources.getDisplayMetrics());
+
+    }
+
+    private void handleChangeTheme() {
+        final String[] listTheme = {getString(R.string.light), getString(R.string.dark)};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(getString(R.string.choose_theme))
+                .setSingleChoiceItems(listTheme, SplashActivity.themeSelect, (dialogInterface, i) -> {
+                    if (listTheme[i].equals(getString(R.string.light))) {
+                        SplashActivity.themeSelect = 0;
+                        Log.v("langSelect", SplashActivity.langSelect + "");
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                    }
+
+                    if (listTheme[i].equals(getString(R.string.dark))) {
+                        SplashActivity.themeSelect = 1;
+                        Log.v("langSelect", SplashActivity.langSelect + "");
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                    }
+                })
+                .setPositiveButton("Ok", (dialogInterface, i) -> {
+                    dialogInterface.dismiss();
+                })
+                .create()
+                .show();
 
     }
 

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white">
+    android:background="?colorOnPrimary">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -30,7 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
-        android:background="@color/white"
+        android:background="?colorOnPrimary"
         android:padding="5dp">
 
         <androidx.cardview.widget.CardView
@@ -67,7 +67,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/product_sans"
                 android:text="Name song"
-                android:textColor="@color/black"
+                android:textColor="?colorOnSecondary"
                 android:textSize="16sp" />
 
             <TextView

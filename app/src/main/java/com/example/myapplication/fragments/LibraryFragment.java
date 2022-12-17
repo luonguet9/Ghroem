@@ -198,7 +198,7 @@ public class LibraryFragment extends Fragment {
         });
 
         btCreate.setOnClickListener(view1 -> {
-            String name = edtNamePlaylist.getText().toString();
+            String name = edtNamePlaylist.getText().toString().trim();
             if (name.isEmpty()) {
                 edtNamePlaylist.setError(getString(R.string.please_give_your_playlist_a_name));
             } else {
