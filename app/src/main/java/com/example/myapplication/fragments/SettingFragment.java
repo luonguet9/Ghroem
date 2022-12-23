@@ -96,6 +96,24 @@ public class SettingFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!SplashActivity.language.equals(Locale.getDefault().getDisplayLanguage())) {
+            switch (Locale.getDefault().getDisplayLanguage()) {
+                case "English":
+                    SplashActivity.langSelect = 0;
+                    SplashActivity.language = Locale.getDefault().getDisplayLanguage();
+                    break;
+                case "Tiếng Việt":
+                    SplashActivity.langSelect = 1;
+                    SplashActivity.language = Locale.getDefault().getDisplayLanguage();
+                    break;
+            }
+        }
+    }
+
+
     private void showChangeLanguageDialog() {
         final String[] listLanguage = {"English", "Tiếng Việt"};
 
@@ -106,16 +124,18 @@ public class SettingFragment extends Fragment {
                     if (listLanguage[i].equals("English")) {
                         SplashActivity.langSelect = 0;
                         setLocale(requireActivity(), "en");
-                        ((MainActivity) requireActivity()).finish();
                         startActivity(requireActivity().getIntent());
+                        ((MainActivity) requireActivity()).finish();
+                        requireActivity().overridePendingTransition(0, 0);
 
                     }
 
                     if (listLanguage[i].equals("Tiếng Việt")) {
                         SplashActivity.langSelect = 1;
                         setLocale(requireActivity(), "vi");
-                        ((MainActivity) requireActivity()).finish();
                         startActivity(requireActivity().getIntent());
+                        ((MainActivity) requireActivity()).finish();
+                        requireActivity().overridePendingTransition(0, 0);
 
                     }
 
@@ -174,13 +194,11 @@ public class SettingFragment extends Fragment {
                 .setSingleChoiceItems(listTheme, SplashActivity.themeSelect, (dialogInterface, i) -> {
                     if (listTheme[i].equals(getString(R.string.light))) {
                         SplashActivity.themeSelect = 0;
-                        Log.v("langSelect", SplashActivity.langSelect + "");
                         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                     }
 
                     if (listTheme[i].equals(getString(R.string.dark))) {
                         SplashActivity.themeSelect = 1;
-                        Log.v("langSelect", SplashActivity.langSelect + "");
                         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                     }
                 })

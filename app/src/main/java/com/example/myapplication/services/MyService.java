@@ -6,6 +6,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -14,11 +15,13 @@ import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -29,6 +32,7 @@ import com.example.myapplication.activities.MediaPlayerActivity;
 import com.example.myapplication.receivers.ActionReceiver;
 import com.example.myapplication.models.Song;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -122,8 +126,11 @@ public class MyService extends Service {
 
         Intent notifyIntent = new Intent(this, MainActivity.class);
 // Set the Activity to start in a new, empty task
-        notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//        notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+//                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        notifyIntent.setAction(Intent.ACTION_MAIN);
+        notifyIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        notifyIntent.setFlags(Intent. FLAG_ACTIVITY_CLEAR_TOP | Intent. FLAG_ACTIVITY_SINGLE_TOP );
 // Create the PendingIntent
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this, 0, notifyIntent,
@@ -137,6 +144,8 @@ public class MyService extends Service {
                 .setContentTitle(song.getName())
                 .setContentText(song.getSinger())
                 .setContentIntent(pendingIntent)
+                .setOngoing(true)
+                .setAutoCancel(false)
                 .setStyle(new androidx.media.app.NotificationCompat.MediaStyle().setShowActionsInCompactView(0, 1, 2));
 
         if (isPlaying) {
@@ -180,7 +189,7 @@ public class MyService extends Service {
         Intent intent = new Intent(this, ActionReceiver.class);
         intent.putExtra("action_music", action);
 
-        return PendingIntent.getBroadcast(context.getApplicationContext(), action, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getBroadcast(context.getApplicationContext(), action, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 
 

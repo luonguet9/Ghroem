@@ -27,6 +27,11 @@
         <item name="backgroundColor">@drawable/bg_bottom_media_player_light</item>
     </style>
 
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- All other attrs and styles -->
+        <item name="textAppearanceLargePopupMenu">@style/AppTheme.TextAppearance.Popup</item>
+    </style>
+
     <style name="CustomTextFont"
         parent="Widget.Design.BottomNavigationView">
         <item name="fontFamily">@font/product_sans</item>

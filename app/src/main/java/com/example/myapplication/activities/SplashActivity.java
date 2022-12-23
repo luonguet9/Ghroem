@@ -10,6 +10,7 @@ import android.app.AlertDialog;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -25,19 +26,25 @@ import com.example.myapplication.services.MyService;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class SplashActivity extends AppCompatActivity {
 
     ActivityResultLauncher<String> storagePermissionLauncher;
     public static List<Song> mSongList;
 
-    public static int langSelect = 0;
-    public static int themeSelect = 0;
+
+    public static int langSelect = -1;
+    public static int themeSelect = -1;
+    public static String language = Locale.getDefault().getDisplayLanguage();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        handleLanguageSystem();
+        handleThemeSystem();
 
         storagePermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), result -> {
             if (result) {
@@ -55,6 +62,28 @@ public class SplashActivity extends AppCompatActivity {
         });
 
         storagePermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+
+    private void handleLanguageSystem() {
+        switch (Locale.getDefault().getDisplayLanguage()) {
+            case "English":
+                SplashActivity.langSelect = 0;
+                break;
+            case "Tiếng Việt":
+                SplashActivity.langSelect = 1;
+                break;
+        }
+    }
+
+    private void handleThemeSystem() {
+        switch (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) {
+            case Configuration.UI_MODE_NIGHT_YES:
+                SplashActivity.themeSelect = 1;
+                break;
+            case Configuration.UI_MODE_NIGHT_NO:
+                SplashActivity.themeSelect = 0;
+                break;
+        }
     }
 
     private void fetchSongs() {
@@ -126,16 +155,16 @@ public class SplashActivity extends AppCompatActivity {
                 alertDialog.setTitle("Requesting Permission");
                 alertDialog.setMessage("Allow us to fetch songs form your device");
 
-                alertDialog.setPositiveButton("Allow", (dialogInterface, i) -> {
-                    //request permission again
-                    storagePermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                });
+                    alertDialog.setPositiveButton("Allow", (dialogInterface, i) -> {
+                        //request permission again
+                        storagePermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                    });
 
-                alertDialog.setNegativeButton("Not Allow", (dialogInterface, i) -> {
-                    //request permission again
-                    Toast.makeText(this, "You denied to fetch songs", Toast.LENGTH_SHORT).show();
-                    dialogInterface.dismiss();
-                });
+                    alertDialog.setNegativeButton("Not Allow", (dialogInterface, i) -> {
+                        //request permission again
+                        Toast.makeText(this, "You denied to fetch songs", Toast.LENGTH_SHORT).show();
+                        dialogInterface.dismiss();
+                    });
 
                 alertDialog.show();
             } else {
